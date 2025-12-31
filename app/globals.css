@@ -120,6 +120,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -145,14 +146,12 @@
 }
 
 .gold-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(187, 161, 79, 0) 40%,
-    rgba(187, 161, 79, 0.4) 50%,
-    rgba(187, 161, 79, 0) 60%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(187, 161, 79, 0) 40%,
+      rgba(187, 161, 79, 0.4) 50%,
+      rgba(187, 161, 79, 0) 60%,
+      transparent 100%);
   background-size: 200% 100%;
   animation: shimmer 4s infinite linear;
 }
@@ -161,6 +160,7 @@
   0% {
     background-position: 100% 0;
   }
+
   100% {
     background-position: -100% 0;
   }
@@ -170,6 +170,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -213,11 +214,13 @@
 }
 
 @keyframes pulse-gold {
+
   0%,
   100% {
     opacity: 0.2;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.4;
     transform: scale(1.05);
@@ -230,4 +233,51 @@
 
 .car-glow {
   box-shadow: 0 0 120px 40px rgba(187, 161, 79, 0.15);
+}
+
+.neon-gold-glow {
+  box-shadow: 0 0 15px rgba(187, 161, 79, 0.5), 0 0 30px rgba(187, 161, 79, 0.3);
+  border: 4px solid #bba14f;
+}
+
+.digital-pattern {
+  background-image:
+    linear-gradient(rgba(187, 161, 79, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(187, 161, 79, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle, black 40%, transparent 100%);
+}
+
+.circuit-grid {
+  background-image: radial-gradient(circle at center, rgba(187, 161, 79, 0.15) 0%, transparent 70%);
+  position: relative;
+}
+
+.circuit-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(187, 161, 79, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(187, 161, 79, 0.05) 1px, transparent 1px);
+  background-size: 100px 100px;
+  pointer-events: none;
+}
+
+@keyframes neon-pulse-gold {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 15px rgba(187, 161, 79, 0.5), 0 0 30px rgba(187, 161, 79, 0.3);
+  }
+
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 25px rgba(187, 161, 79, 0.8), 0 0 50px rgba(187, 161, 79, 0.5);
+  }
+}
+
+.animate-neon-pulse-gold {
+  animation: neon-pulse-gold 2s infinite ease-in-out;
 }

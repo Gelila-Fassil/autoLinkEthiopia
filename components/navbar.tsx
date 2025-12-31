@@ -35,7 +35,7 @@ export function Navbar() {
         </Link>
 
         <div className="hidden md:flex items-center gap-12 text-sm uppercase tracking-wider">
-          <Link href="#inventory" className="hover:text-primary transition-colors">
+          <Link href="/inventory" className="hover:text-primary transition-colors">
             Inventory
           </Link>
           <Link href="#rentals" className="hover:text-primary transition-colors">
@@ -57,7 +57,7 @@ export function Navbar() {
           <button className="hidden lg:block px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-background transition-all duration-300 text-sm uppercase tracking-wider font-semibold">
             Book a Test Drive
           </button>
-          
+
           <button onClick={() => setIsOpen(true)} className="flex flex-col gap-1.5 group cursor-pointer md:hidden">
             <div className="w-7 h-[2px] bg-foreground group-hover:bg-primary transition-all duration-300" />
             <div className="w-5 h-[2px] bg-foreground group-hover:w-7 group-hover:bg-primary transition-all duration-300 self-end" />
@@ -91,9 +91,9 @@ export function Navbar() {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: i * 0.1 }}
                 >
-                  <Link 
-                    href={`#${item.toLowerCase().replace(' ', '-')}`} 
-                    onClick={() => setIsOpen(false)} 
+                  <Link
+                    href={item === "Inventory" ? "/inventory" : `#${item.toLowerCase().replace(' ', '-')}`}
+                    onClick={() => setIsOpen(false)}
                     className="text-4xl md:text-6xl font-serif font-bold hover:text-primary transition-colors duration-300"
                   >
                     {item}

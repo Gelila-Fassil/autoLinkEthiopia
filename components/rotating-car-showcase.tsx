@@ -4,7 +4,11 @@ import { motion, useMotionValue, useTransform, animate } from "framer-motion"
 import Image from "next/image"
 import { useEffect } from "react"
 
-export function RotatingCarShowcase() {
+export function RotatingCarShowcase({
+  image = "/luxury-sports-car-lamborghini-revuelto-hero.jpg"
+}: {
+  image?: string
+}) {
   const rotation = useMotionValue(0)
 
   useEffect(() => {
@@ -68,7 +72,7 @@ export function RotatingCarShowcase() {
 
             {/* High-quality Red Sports Car */}
             <Image
-              src="/luxury-sports-car-lamborghini-revuelto-hero.jpg" // Using the existing red car asset
+              src={image} // Using the dynamic image prop
               alt="Rotating Luxury Car"
               fill
               className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.4)]"

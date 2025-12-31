@@ -2,6 +2,8 @@
 
 import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card"
 import { ArrowRight } from "lucide-react"
+import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 const CARS = [
   {
@@ -71,54 +73,83 @@ export function InventoryGallery() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {CARS.map((car) => (
-            <CardContainer key={car.id} className="inter-var w-full">
-              <CardBody className="bg-neutral-900 border border-white/[0.1] w-auto h-auto min-h-[480px] p-6 rounded-2xl group/card transition-all duration-300 hover:border-primary/50">
-                <CardItem translateZ="50" className="w-full">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
-                    <img
-                      src={car.image || "/placeholder.svg"}
-                      alt={car.name}
-                      className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                </CardItem>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {CARS.map((car, index) => {
+            const isLightCard = index % 2 === 0;
+            return (
+              <CardContainer key={car.id} className="inter-var w-full">
+                <CardBody className={cn(
+                  "relative group/card w-auto h-auto min-h-[480px] p-6 rounded-2xl transition-all duration-300 hover:-translate-y-2 border",
+                  isLightCard
+                    ? "bg-[#e5e7eb] border-white/20 shadow-xl"
+                    : "bg-background/40 backdrop-blur-xl border-primary/10 hover:border-primary/40"
+                )}>
+                  <CardItem translateZ="50" className="w-full">
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/5 bg-neutral-900">
+                      <img
+                        src={car.image || "/placeholder.svg"}
+                        alt={car.name}
+                        className="w-full h-full object-contain group-hover/card:scale-105 transition-transform duration-500 p-4"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
+                    </div>
+                  </CardItem>
 
-                <div className="mt-6 space-y-4">
-                  <div>
-                    <CardItem
-                      translateZ="30"
-                      className="text-xl font-serif font-bold text-foreground"
-                    >
-                      {car.name}
-                    </CardItem>
-                    <CardItem
-                      as="p"
-                      translateZ="40"
-                      className="text-primary text-[10px] uppercase tracking-widest font-bold mt-1"
-                    >
-                      {car.year} • {car.category}
-                    </CardItem>
-                  </div>
+                  <div className="mt-8 space-y-6">
+                    <div className="space-y-1">
+                      <CardItem
+                        translateZ="40"
+                        className={cn(
+                          "text-2xl font-serif font-bold transition-colors duration-300",
+                          isLightCard ? "text-black group-hover/card:text-primary" : "text-white group-hover/card:text-primary"
+                        )}
+                      >
+                        {car.name}
+                      </CardItem>
+                      <CardItem
+                        as="p"
+                        translateZ="30"
+                        className={cn(
+                          "text-[10px] uppercase tracking-[0.3em] font-bold",
+                          isLightCard ? "text-black/60" : "text-primary/60"
+                        )}
+                      >
+                        {car.year} • {car.category}
+                      </CardItem>
+                    </div>
 
-                  <div className="flex justify-between items-center pt-4 border-t border-white/[0.05]">
-                    <CardItem translateZ="20" className="text-2xl font-serif font-bold text-primary">
-                      {car.price}
-                    </CardItem>
-                    <CardItem
-                      translateZ="30"
-                      as="button"
-                      className="px-6 py-2 bg-white/5 hover:bg-primary text-foreground hover:text-background rounded-full text-[10px] uppercase tracking-widest font-bold transition-all duration-300 flex items-center gap-2 group/btn"
-                    >
-                      View Details
-                      <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </CardItem>
+                    <div className={cn(
+                      "flex justify-between items-center pt-6 border-t",
+                      isLightCard ? "border-black/10" : "border-white/5"
+                    )}>
+                      <CardItem
+                        translateZ="30"
+                        className={cn(
+                          "text-2xl font-serif font-bold",
+                          isLightCard ? "text-black" : "gold-gradient"
+                        )}
+                      >
+                        {car.price}
+                      </CardItem>
+                      <Link href={`/inventory/${car.id}`}>
+                        <CardItem
+                          translateZ="40"
+                          as="button"
+                          className={cn(
+                            "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.4em] font-bold transition-all duration-300 flex items-center gap-2 group/btn",
+                            isLightCard ? "bg-black text-white hover:bg-primary" : "bg-primary text-background hover:bg-accent"
+                          )}
+                        >
+                          Details
+                          <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                        </CardItem>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              </CardBody>
-            </CardContainer>
-          ))}
+                </CardBody>
+              </CardContainer>
+            );
+          })}
         </div>
       </div>
     </section>
