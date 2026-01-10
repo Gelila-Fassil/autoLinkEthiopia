@@ -21,7 +21,7 @@ export function PremiumCarCard({ car, isFeatured }: { car: CarProps, isFeatured?
     return (
         <CardContainer className="inter-var w-full">
             <CardBody className={cn(
-                "relative group/card bg-neutral-950 border w-auto h-auto min-h-[520px] p-8 rounded-3xl transition-all duration-500 overflow-hidden hover:scale-110 hover:z-50",
+                "relative group/card bg-neutral-950 border w-auto h-auto min-h-[520px] p-8 pt-0 rounded-3xl transition-all duration-500 overflow-hidden hover:scale-110 hover:z-50",
                 isFeatured
                     ? "neon-gold-glow animate-neon-pulse-gold border-primary"
                     : "border-primary/20 hover:border-primary/60 hover:shadow-[0_0_50px_-12px_rgba(187,161,79,0.3)]"
@@ -53,7 +53,7 @@ export function PremiumCarCard({ car, isFeatured }: { car: CarProps, isFeatured?
                     </div>
                 )}
 
-                <div className="absolute top-0 right-0 p-6 z-20">
+                <div className="absolute top-6 right-6 z-30">
                     <CardItem
                         translateZ="50"
                         className="bg-primary/20 backdrop-blur-xl border border-primary/30 px-4 py-1.5 rounded-full flex items-center gap-2 shadow-lg shadow-primary/10"
@@ -63,18 +63,18 @@ export function PremiumCarCard({ car, isFeatured }: { car: CarProps, isFeatured?
                     </CardItem>
                 </div>
 
-                <CardItem translateZ="100" className="w-full mt-4 relative">
+                <CardItem translateZ="100" className="w-full relative -m-8 mb-0">
                     {/* Background Aura/Glow */}
                     <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full scale-75 opacity-0 group-hover/card:opacity-100 transition-opacity duration-1000" />
 
-                    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/5">
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-t-3xl border-b-2 border-primary/20">
                         <img
                             src={car.image || "/placeholder.svg"}
                             alt={car.name}
-                            className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 ease-out"
+                            className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700 ease-out"
                         />
                         {/* Reduced gradient opacity for better car visibility */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/40 via-transparent to-transparent opacity-60 group-hover/card:opacity-20 transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/60 via-transparent to-transparent opacity-80 group-hover/card:opacity-40 transition-opacity duration-500" />
                     </div>
                 </CardItem>
 

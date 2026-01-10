@@ -3,9 +3,12 @@
 import { Navbar } from "@/components/navbar"
 import { PremiumCarCard } from "@/components/car-card-premium"
 import { InventoryGallery } from "@/components/inventory-gallery"
+import { PremiumCarousel } from "@/components/premium-carousel"
+import { CinematicGallery } from "@/components/cinematic-gallery"
 import { motion } from "framer-motion"
 import { ShinyText } from "@/components/ui/shiny-text"
-import { SplitText } from "@/components/ui/split-text"
+import { Footer } from "@/components/footer"
+
 import { cn } from "@/lib/utils"
 import dynamic from 'next/dynamic'
 
@@ -47,6 +50,25 @@ const PREMIUM_CARS = [
         image: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=1000",
         year: "2025",
         owner: "Elias K."
+    },
+
+    {
+        id: 102,
+        name: "Lamborghini Revuelto",
+        category: "Supercar",
+        price: "$3,200",
+        image: "/lamborghini-revuelto.jpg",
+        year: "2025",
+        owner: "Selam T."
+    },
+     {
+        id: 103,
+        name: "McLaren 750S Spider",
+        category: "Supercar",
+        price: "$2,800",
+        image: "https://images.unsplash.com/photo-1621135802920-133df287f89c?auto=format&fit=crop&q=80&w=1000",
+        year: "2024",
+        owner: "Abel M."
     }
 ]
 
@@ -93,22 +115,31 @@ export default function InventoryPage() {
                             transition={{ duration: 0.8 }}
                             className="flex items-center gap-4"
                         >
-                            <div className="h-[1px] w-12 bg-primary" />
-                            <span className="text-[10px] uppercase tracking-[0.5em] text-primary font-bold">
-                                Automotive Gallery
+                            <div className="h-[1px] w-20 bg-primary" />
+                            <span className="text-xs uppercase tracking-[0.6em] text-primary font-bold shadow-primary/20 drop-shadow-md">
+                                The Ultimate Collection
                             </span>
                         </motion.div>
 
-                        <div className="space-y-4">
-                            <h1 className="text-[clamp(3.5rem,10vw,8rem)] font-serif font-bold tracking-tighter leading-[0.8]">
-                                <SplitText delay={0.1} duration={0.03} className="text-foreground">CAR</SplitText><br />
+                        <div className="space-y-0 relative">
+                            <h1 className="text-[clamp(2.5rem,6vw,5rem)] font-serif font-medium tracking-tight leading-[0.9] text-white mix-blend-difference">
                                 <motion.span
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 1.2, delay: 0.6 }}
-                                    className="text-primary italic block mt-4"
+                                    initial={{ y: 100, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ duration: 0.8, ease: "easeOut" }}
+                                    className="block"
                                 >
-                                    <ShinyText speed={3}>COLLECTION</ShinyText>
+                                    BEYOND
+                                </motion.span>
+                            </h1>
+                            <h1 className="text-[clamp(2.5rem,6vw,5rem)] font-bold tracking-tighter leading-[0.9] text-transparent bg-clip-text bg-gradient-to-r from-primary via-white/90 to-primary">
+                                <motion.span
+                                    initial={{ y: 100, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                                    className="block italic"
+                                >
+                                    <ShinyText speed={4}>POSSIBLE</ShinyText>
                                 </motion.span>
                             </h1>
                         </div>
@@ -116,10 +147,11 @@ export default function InventoryPage() {
                         <motion.p
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ duration: 1, delay: 1.2 }}
-                            className="text-muted-foreground text-xl max-w-xl leading-relaxed font-light"
+                            transition={{ duration: 1, delay: 0.8 }}
+                            className="text-white/80 text-2xl md:text-3xl max-w-2xl leading-relaxed font-light font-serif border-l-2 border-primary/50 pl-6 my-8"
                         >
-                            A high-tech curated gallery showcasing Ethiopia's most prestigious automobiles. From verified partner listings to our official showroom.
+                            Where <span className="text-primary italic">engineering</span> meets <span className="text-white font-bold">art</span>.
+                            Experience the pinnacle of automotive perfection.
                         </motion.p>
                     </div>
                 </div>
@@ -137,53 +169,16 @@ export default function InventoryPage() {
                         <div className="h-0.5 w-24 bg-primary/40 block" />
                     </div>
 
-                    {/* Symmetrical 3-Card Layout */}
-                    <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8 max-w-[1600px] mx-auto px-4">
-                        {/* Left Card */}
-                        <div className="w-full lg:w-1/3 transition-all duration-500 hover:z-20">
-                            <PremiumCarCard car={PREMIUM_CARS[0]} />
-                        </div>
-
-                        {/* Central Featured Card */}
-                        <div className="w-full lg:w-1/3 z-10 scale-105">
-                            <PremiumCarCard car={PREMIUM_CARS[1]} isFeatured={true} />
-                        </div>
-
-                        {/* Right Card */}
-                        <div className="w-full lg:w-1/3 transition-all duration-500 hover:z-20">
-                            <PremiumCarCard car={PREMIUM_CARS[2]} />
-                        </div>
-                    </div>
-
-                    {/* Featured CTA and Indicators */}
-                    <div className="mt-20 flex flex-col items-center gap-12">
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="px-12 py-4 bg-primary text-background font-bold uppercase tracking-[0.2em] rounded-md shadow-[0_0_20px_rgba(187,161,79,0.4)] hover:shadow-[0_0_30px_rgba(187,161,79,0.6)] transition-all duration-300"
-                        >
-                            VIEW DETAILS
-                        </motion.button>
-
-                        {/* Carousel Dots */}
-                        <div className="flex gap-3">
-                            {[...Array(6)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className={cn(
-                                        "w-2.5 h-2.5 rounded-full border border-primary/40",
-                                        i === 2 ? "bg-primary shadow-[0_0_8px_#bba14f]" : "bg-transparent"
-                                    )}
-                                />
-                            ))}
-                        </div>
+                    {/* Hero Carousel Component */}
+                    <div className="w-full">
+                        <PremiumCarousel />
                     </div>
                 </div>
             </section>
 
             {/* Main Inventory Gallery */}
-            <section className="py-40 relative circuit-grid">
-                <div className="max-w-7xl mx-auto px-8 md:px-16 mb-20">
+            <section className="py-20 relative circuit-grid">
+                <div className="max-w-7xl mx-auto px-8 md:px-16 mb-10">
                     <h3 className="text-3xl md:text-5xl font-serif font-bold tracking-[0.1em] text-white uppercase">
                         STANDARD <span className="text-primary italic">COLLECTION</span>
                     </h3>
@@ -192,20 +187,10 @@ export default function InventoryPage() {
                 <InventoryGallery />
             </section>
 
+            {/* Cinematic Gallery Section */}
+            <CinematicGallery />
 
-            <footer className="py-24 border-t border-border bg-background">
-                <div className="max-w-7xl mx-auto px-8 md:px-16 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="text-2xl font-serif font-bold tracking-tight">
-                        <span className="text-primary italic">A</span>
-                        <span className="tracking-[0.2em]">UTOLINK</span>
-                    </div>
-                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground">© 2025 Autolink Ethiopia. All Rights Reserved.</p>
-                    <div className="flex gap-8 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                        <a href="#" className="hover:text-primary transition-colors">Instagram</a>
-                        <a href="#" className="hover:text-primary transition-colors">Telegram</a>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </main>
     )
 }
