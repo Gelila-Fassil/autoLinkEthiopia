@@ -4,9 +4,14 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { FloatingDock } from "@/components/ui/floating-dock"
-import { Car, Home, Settings, Info, Mail } from "lucide-react"
+import { Car, Home, Settings, Info, Mail, Building2 } from "lucide-react"
 
 const navigationItems = [
+  {
+    title: "Home",
+    icon: <Home />,
+    href: "/",
+  },
   {
     title: "Inventory",
     icon: <Car />,
@@ -14,18 +19,13 @@ const navigationItems = [
   },
   {
     title: "House Rentals",
-    icon: <Home />,
-    href: "#rentals",
+    icon: <Building2 />,
+    href: "/houses",
   },
   {
     title: "Services",
     icon: <Settings />,
     href: "#services",
-  },
-  {
-    title: "About",
-    icon: <Info />,
-    href: "#about",
   },
   {
     title: "Contact",
