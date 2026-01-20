@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { motion, useTransform, useScroll } from "framer-motion"
+import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 const GALLERY_IMAGES = [
@@ -11,20 +11,61 @@ const GALLERY_IMAGES = [
   "/white-porsche-911-gt3.jpg",
   "/gold-range-rover.jpg",
   "/rolls-royce-ghost-black.jpg",
-  "/bmw-m8-competition-black.jpg", 
-  "/luxury-sports-car-lamborghini-revuelto-hero.jpg",
-  "/bentley-continental-gt-white.jpg",
-  "/black-mercedes-g-wagon.jpg",
-  "/gold-range-rover.jpg",
-  "/rolls-royce-ghost-black.jpg",
   "/bmw-m8-competition-black.jpg",
+  "/futuristic_luxury_concept_car_dark.png",
+  "/hero-luxury.png",
+  "/luxury-apartment-living-room.jpg",
+  "/modern-villa-exterior-night.jpg",
 ]
 
-const Column = ({ images, y = 0 }: { images: string[], y?: any }) => {
+// Duplicate images multiple times for seamless infinite loop
+const createInfiniteImages = (images: string[]) => {
+  // Duplicate twice; we animate by exactly one set height for a seamless loop.
+  return [...images, ...images]
+}
+
+const Column = ({ images, direction = "up" }: { images: string[], direction?: "up" | "down" }) => {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const [oneSetHeight, setOneSetHeight] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const totalHeight = containerRef.current.getBoundingClientRect().height
+    // We render exactly 2 sets (see createInfiniteImages), so divide by 2.
+    const computedOneSetHeight = totalHeight / 2
+    if (Number.isFinite(computedOneSetHeight)) {
+      setOneSetHeight(computedOneSetHeight)
+    }
+  }, [images.length])
+
+  const animate = oneSetHeight
+    ? {
+        // For downward motion, start offset upward so we never reveal an empty gap at the top.
+        y: direction === "up"
+          ? [0, -oneSetHeight]
+          : [-oneSetHeight, 0]
+      }
+    : undefined
+
+  const transition = oneSetHeight
+    ? {
+        duration: 120,
+        repeat: Infinity,
+        ease: "linear",
+        delay: 0,
+      } as const
+    : undefined
+
   return (
-    <motion.div style={{ y }} className="flex flex-col gap-4 w-full relative min-w-[250px]">
+    <motion.div 
+      ref={containerRef}
+      className="flex flex-col gap-4 w-full relative min-w-[250px]"
+      animate={animate}
+      transition={transition}
+    >
+      {/* Render images multiple times for seamless infinite loop */}
       {images.map((src, i) => (
-        <div key={i} className="relative aspect-[3/4] rounded-xl overflow-hidden group shadow-2xl border border-white/10">
+        <div key={i} className="relative aspect-[3/4] rounded-xl overflow-hidden group shadow-2xl border border-white/10 flex-shrink-0">
           <motion.img
             src={src}
             alt="Gallery item"
@@ -38,19 +79,13 @@ const Column = ({ images, y = 0 }: { images: string[], y?: any }) => {
 }
 
 export function CinematicGallery() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], [0, -600])
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, 400])
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -500])
-  const y4 = useTransform(scrollYProgress, [0, 1], [0, 500])
+  const infiniteImages1 = createInfiniteImages(GALLERY_IMAGES)
+  const infiniteImages2 = createInfiniteImages(GALLERY_IMAGES)
+  const infiniteImages3 = createInfiniteImages(GALLERY_IMAGES)
+  const infiniteImages4 = createInfiniteImages(GALLERY_IMAGES)
 
   return (
-    <section ref={containerRef} className="py-32 bg-background overflow-hidden relative">
+    <section className="py-32 bg-background overflow-hidden relative">
       <div className="max-w-[1920px] mx-auto px-4 md:px-8">
          <div className="mb-24 text-center space-y-4">
              <motion.h2 
@@ -65,11 +100,11 @@ export function CinematicGallery() {
 
          <div className="h-[120vh] overflow-hidden rounded-[3rem] bg-zinc-900/10 border border-primary/10 backdrop-blur-sm p-4 md:p-8 relative">
              <div className="flex gap-4 md:gap-8 -mt-[25vh]">
-                <Column images={GALLERY_IMAGES.slice(0, 4)} y={y} />
-                <Column images={GALLERY_IMAGES.slice(4, 8)} y={y2} />
-                <Column images={GALLERY_IMAGES.slice(8, 12)} y={y3} />
+                <Column images={infiniteImages1} direction="up" />
+                <Column images={infiniteImages2} direction="down" />
+                <Column images={infiniteImages3} direction="up" />
                 <div className="hidden lg:block w-full">
-                     <Column images={GALLERY_IMAGES.slice(0, 4)} y={y4} />
+                     <Column images={infiniteImages4} direction="down" />
                 </div>
             </div>
          </div>

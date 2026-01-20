@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { FloatingDock } from "@/components/ui/floating-dock"
-import { Car, Home, Settings, Info, Mail, Building2 } from "lucide-react"
+import { Car, Home, Mail, Building2 } from "lucide-react"
+import { TestDriveModal } from "@/components/test-drive-modal"
 
 const navigationItems = [
   {
@@ -23,19 +24,15 @@ const navigationItems = [
     href: "/houses",
   },
   {
-    title: "Services",
-    icon: <Settings />,
-    href: "#services",
-  },
-  {
     title: "Contact",
     icon: <Mail />,
-    href: "#contact",
+    href: "/contact",
   },
 ]
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isTestDriveModalOpen, setIsTestDriveModalOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50)
@@ -78,13 +75,22 @@ export function Navbar() {
           {/* Right: Book a Test Drive Button */}
           <div className="flex justify-end">
             <div className="hidden lg:block">
-              <button className="px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-background transition-all duration-300 text-sm uppercase tracking-wider font-semibold whitespace-nowrap">
+              <button 
+                onClick={() => setIsTestDriveModalOpen(true)}
+                className="px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-background transition-all duration-300 text-sm uppercase tracking-wider font-semibold whitespace-nowrap"
+              >
                 Book a Test Drive
               </button>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Test Drive Modal */}
+      <TestDriveModal 
+        isOpen={isTestDriveModalOpen} 
+        onClose={() => setIsTestDriveModalOpen(false)} 
+      />
     </>
   )
 }

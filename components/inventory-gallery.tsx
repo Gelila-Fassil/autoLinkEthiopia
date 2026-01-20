@@ -4,6 +4,7 @@ import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { motion } from "framer-motion"
 
 const CARS = [
   {
@@ -38,23 +39,23 @@ const CARS = [
     image: "/rolls-royce-ghost-black.jpg",
     year: "2024",
   },
-   {
-    id: 2,
-    name: "Porsche 911 GT3",
-    category: "Sports Car",
-    price: "$245,000",
-    image: "/white-porsche-911-gt3.jpg",
+
+  {
+    id: 5,
+    name: "Bentley Continental GT",
+    category: "Luxury Coupe",
+    price: "$240,000",
+    image: "/bentley-continental-gt-white.jpg",
     year: "2024"
   },
-   {
-    id: 1,
-    name: "Mercedes-Benz G63 AMG",
-    category: "Luxury SUV",
-    price: "$285,000",
-    image: "/black-mercedes-g-wagon.jpg",
+  {
+    id: 6,
+    name: "BMW M8 Competition",
+    category: "Sports Coupe",
+    price: "$140,000",
+    image: "/bmw-m8-competition-black.jpg",
     year: "2025"
   },
- 
 ]
 
 export function InventoryGallery() {
@@ -76,7 +77,7 @@ export function InventoryGallery() {
           {CARS.map((car, index) => {
             const isFeatured = index % 3 === 0;
             return (
-              <CardContainer key={car.id} className="inter-var w-full h-full">
+              <CardContainer key={car.id} className="inter-var w-full h-full" containerClassName="py-0">
                 <CardBody className={cn(
                   "relative group/card w-full h-full min-h-[480px] p-6 rounded-3xl transition-all duration-500 hover:-translate-y-3 flex flex-col",
                   "bg-gradient-to-br from-neutral-900 via-neutral-950 to-black",
