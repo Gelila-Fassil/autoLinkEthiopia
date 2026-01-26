@@ -19,9 +19,10 @@ interface TestDriveModalProps {
 }
 
 export function TestDriveModal({ isOpen, onClose }: TestDriveModalProps) {
-    const [selectedCar, setSelectedCar] = useState("")
-    const [selectedDate, setSelectedDate] = useState("")
-    const [selectedTime, setSelectedTime] = useState("")
+    const [makeModel, setMakeModel] = useState("")
+    const [year, setYear] = useState("")
+    const [price, setPrice] = useState("")
+    const [condition, setCondition] = useState("Used")
 
     // Prevent body scroll when modal is open
     useEffect(() => {
@@ -38,7 +39,7 @@ export function TestDriveModal({ isOpen, onClose }: TestDriveModalProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         // Handle form submission here
-        console.log({ selectedCar, selectedDate, selectedTime })
+        console.log({ makeModel, year, price, condition })
         onClose()
     }
 
@@ -80,10 +81,10 @@ export function TestDriveModal({ isOpen, onClose }: TestDriveModalProps) {
                                 {/* Header */}
                                 <div className="mb-8">
                                     <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-2">
-                                        Book Your <span className="text-primary italic">Test Drive</span>
+                                        Place Your <span className="text-primary italic">Ad</span>
                                     </h2>
                                     <p className="text-white/60">
-                                        Fill out the form below and we'll get back to you within 24 hours.
+                                        Fill out the details below to list your vehicle on our platform.
                                     </p>
                                 </div>
 
@@ -140,75 +141,79 @@ export function TestDriveModal({ isOpen, onClose }: TestDriveModalProps) {
                                         </div>
                                     </div>
 
-                                    {/* Vehicle Selection */}
+                                    {/* Vehicle Detail: Make & Model */}
                                     <div>
-                                        <label htmlFor="vehicle" className="block text-sm font-medium text-white/70 mb-2">
-                                            Select Vehicle *
+                                        <label htmlFor="makeModel" className="block text-sm font-medium text-white/70 mb-2">
+                                            Make & Model *
                                         </label>
                                         <div className="relative">
                                             <Car className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-                                            <select
-                                                id="vehicle"
+                                            <input
+                                                type="text"
+                                                id="makeModel"
                                                 required
-                                                value={selectedCar}
-                                                onChange={(e) => setSelectedCar(e.target.value)}
-                                                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
-                                            >
-                                                <option value="" className="bg-neutral-900">Choose a vehicle...</option>
-                                                {AVAILABLE_CARS.map((car) => (
-                                                    <option key={car.id} value={car.id} className="bg-neutral-900">
-                                                        {car.name} - {car.category}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                                value={makeModel}
+                                                onChange={(e) => setMakeModel(e.target.value)}
+                                                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                                placeholder="e.g. Toyota Corolla"
+                                            />
                                         </div>
                                     </div>
 
-                                    {/* Date and Time */}
+                                    {/* Year and Price */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label htmlFor="date" className="block text-sm font-medium text-white/70 mb-2">
-                                                Preferred Date *
+                                            <label htmlFor="year" className="block text-sm font-medium text-white/70 mb-2">
+                                                Year *
                                             </label>
                                             <div className="relative">
                                                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                                                 <input
-                                                    type="date"
-                                                    id="date"
+                                                    type="number"
+                                                    id="year"
                                                     required
-                                                    value={selectedDate}
-                                                    onChange={(e) => setSelectedDate(e.target.value)}
-                                                    min={new Date().toISOString().split('T')[0]}
-                                                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all [color-scheme:dark]"
+                                                    value={year}
+                                                    onChange={(e) => setYear(e.target.value)}
+                                                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                                    placeholder="2024"
                                                 />
                                             </div>
                                         </div>
                                         <div>
-                                            <label htmlFor="time" className="block text-sm font-medium text-white/70 mb-2">
-                                                Preferred Time *
+                                            <label htmlFor="price" className="block text-sm font-medium text-white/70 mb-2">
+                                                Asking Price (ETB) *
                                             </label>
                                             <div className="relative">
-                                                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-                                                <select
-                                                    id="time"
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/50 font-bold text-xs">ETB</div>
+                                                <input
+                                                    type="number"
+                                                    id="price"
                                                     required
-                                                    value={selectedTime}
-                                                    onChange={(e) => setSelectedTime(e.target.value)}
-                                                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
-                                                >
-                                                    <option value="" className="bg-neutral-900">Select time...</option>
-                                                    <option value="09:00" className="bg-neutral-900">9:00 AM</option>
-                                                    <option value="10:00" className="bg-neutral-900">10:00 AM</option>
-                                                    <option value="11:00" className="bg-neutral-900">11:00 AM</option>
-                                                    <option value="12:00" className="bg-neutral-900">12:00 PM</option>
-                                                    <option value="13:00" className="bg-neutral-900">1:00 PM</option>
-                                                    <option value="14:00" className="bg-neutral-900">2:00 PM</option>
-                                                    <option value="15:00" className="bg-neutral-900">3:00 PM</option>
-                                                    <option value="16:00" className="bg-neutral-900">4:00 PM</option>
-                                                    <option value="17:00" className="bg-neutral-900">5:00 PM</option>
-                                                    <option value="18:00" className="bg-neutral-900">6:00 PM</option>
-                                                </select>
+                                                    value={price}
+                                                    onChange={(e) => setPrice(e.target.value)}
+                                                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                                    placeholder="4,500,000"
+                                                />
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Condition */}
+                                    <div>
+                                        <label htmlFor="condition" className="block text-sm font-medium text-white/70 mb-2">
+                                            Vehicle Condition *
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                id="condition"
+                                                required
+                                                value={condition}
+                                                onChange={(e) => setCondition(e.target.value)}
+                                                className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+                                            >
+                                                <option value="New" className="bg-neutral-900">Brand New</option>
+                                                <option value="Used" className="bg-neutral-900">Used</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -220,7 +225,7 @@ export function TestDriveModal({ isOpen, onClose }: TestDriveModalProps) {
                                         className="w-full py-4 bg-primary text-background hover:bg-accent font-bold text-sm uppercase tracking-[0.3em] rounded-xl transition-all duration-300 flex items-center justify-center gap-3 hover:shadow-[0_0_30px_rgba(187,161,79,0.5)] mt-6"
                                     >
                                         <Send className="w-5 h-5" />
-                                        Book Test Drive
+                                        Submit Ad
                                     </motion.button>
                                 </form>
                             </div>

@@ -79,7 +79,7 @@ export function Navbar() {
                 onClick={() => setIsTestDriveModalOpen(true)}
                 className="px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-background transition-all duration-300 text-sm uppercase tracking-wider font-semibold whitespace-nowrap"
               >
-                Book a Test Drive
+                Place Your Ad
               </button>
             </div>
           </div>

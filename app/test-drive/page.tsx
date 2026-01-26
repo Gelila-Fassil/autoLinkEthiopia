@@ -29,9 +29,10 @@ export default function TestDrivePage() {
     const textY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"])
     const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
-    const [selectedCar, setSelectedCar] = useState("")
-    const [selectedDate, setSelectedDate] = useState("")
-    const [selectedTime, setSelectedTime] = useState("")
+    const [makeModel, setMakeModel] = useState("")
+    const [year, setYear] = useState("")
+    const [price, setPrice] = useState("")
+    const [condition, setCondition] = useState("Used")
 
     return (
         <main className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
@@ -48,12 +49,12 @@ export default function TestDrivePage() {
       `}</style>
 
             {/* Hero Section */}
-            <section 
+            <section
                 ref={heroRef}
                 className="relative h-[85vh] min-h-[600px] flex items-center overflow-hidden bg-black"
             >
                 {/* Cinematic Background Image */}
-                <motion.div 
+                <motion.div
                     style={{ y: bgY, opacity: opacity }}
                     className="absolute inset-0 z-0 h-[120%]"
                 >
@@ -69,9 +70,9 @@ export default function TestDrivePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/30" />
                     <div className="absolute inset-0 bg-black/40" />
                 </motion.div>
-                 
+
                 <div className="max-w-7xl mx-auto px-8 md:px-16 relative z-10 w-full">
-                    <motion.div 
+                    <motion.div
                         style={{ y: textY }}
                         className="space-y-8 max-w-4xl"
                     >
@@ -83,7 +84,7 @@ export default function TestDrivePage() {
                         >
                             <div className="h-[1px] w-20 bg-primary" />
                             <span className="text-xs uppercase tracking-[0.6em] text-primary font-bold shadow-primary/20 drop-shadow-md">
-                                Experience Excellence
+                                Sell Your Vehicle
                             </span>
                         </motion.div>
 
@@ -95,7 +96,7 @@ export default function TestDrivePage() {
                                     transition={{ duration: 0.8, ease: "easeOut" }}
                                     className="block"
                                 >
-                                    BOOK YOUR
+                                    PLACE YOUR
                                 </motion.span>
                             </h1>
                             <h1 className="text-[clamp(2.5rem,5vw,4.5rem)] font-bold tracking-tighter leading-[0.9] text-transparent bg-clip-text bg-gradient-to-r from-primary via-white/90 to-primary">
@@ -105,7 +106,7 @@ export default function TestDrivePage() {
                                     transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                                     className="block italic"
                                 >
-                                    <ShinyText speed={4}>TEST DRIVE</ShinyText>
+                                    <ShinyText speed={4}>PREMIUM AD</ShinyText>
                                 </motion.span>
                             </h1>
                         </div>
@@ -116,7 +117,7 @@ export default function TestDrivePage() {
                             transition={{ duration: 1, delay: 0.6 }}
                             className="text-white/80 text-xl md:text-2xl max-w-xl leading-relaxed font-light font-serif pl-1"
                         >
-                            Feel the power and precision of our luxury vehicles. Schedule your personalized test drive experience today.
+                            Reach thousands of luxury car enthusiasts. List your vehicle on Ethiopia's most exclusive automotive marketplace.
                         </motion.p>
                     </motion.div>
                 </div>
@@ -127,13 +128,13 @@ export default function TestDrivePage() {
                 <div className="absolute inset-0 digital-pattern opacity-5 pointer-events-none" />
                 <div className="max-w-5xl mx-auto px-8 md:px-16 relative z-10">
                     <div className="text-center mb-12">
-                        <span className="text-primary text-xs uppercase tracking-[0.3em] font-bold mb-4 block">Schedule Your Drive</span>
+                        <span className="text-primary text-xs uppercase tracking-[0.3em] font-bold mb-4 block">List Your Vehicle</span>
                         <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-[0.05em] text-white mb-4">
-                            RESERVE YOUR <span className="text-primary italic">EXPERIENCE</span>
+                            SUBMIT YOUR <span className="text-primary italic">LISTING</span>
                         </h2>
                         <div className="h-0.5 w-24 bg-primary/40 mx-auto mt-8" />
                         <p className="text-lg text-white/70 mt-8 max-w-2xl mx-auto">
-                            Fill out the form below to schedule your test drive. Our team will confirm your appointment within 24 hours.
+                            Fill out the form below to place your ad. Our team will review and publish your listing within 24 hours.
                         </p>
                     </div>
 
@@ -148,9 +149,9 @@ export default function TestDrivePage() {
                         <div className="space-y-6">
                             <div className="flex items-center gap-3 mb-6">
                                 <User className="w-6 h-6 text-primary" />
-                                <h3 className="text-2xl font-serif font-bold text-white">Personal Information</h3>
+                                <h3 className="text-2xl font-serif font-bold text-white">Contact Information</h3>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label htmlFor="firstName" className="block text-sm font-medium text-white/70 mb-2">
@@ -216,89 +217,86 @@ export default function TestDrivePage() {
                             </div>
                         </div>
 
-                        {/* Vehicle Selection */}
+                        {/* Vehicle Details */}
                         <div className="space-y-6 pt-6 border-t border-primary/20">
                             <div className="flex items-center gap-3 mb-6">
                                 <Car className="w-6 h-6 text-primary" />
-                                <h3 className="text-2xl font-serif font-bold text-white">Vehicle Selection</h3>
+                                <h3 className="text-2xl font-serif font-bold text-white">Vehicle Details</h3>
                             </div>
-                            
-                            <div>
-                                <label htmlFor="vehicle" className="block text-sm font-medium text-white/70 mb-2">
-                                    Select Vehicle *
-                                </label>
-                                <div className="relative">
-                                    <Car className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
-                                    <select
-                                        id="vehicle"
-                                        name="vehicle"
-                                        required
-                                        value={selectedCar}
-                                        onChange={(e) => setSelectedCar(e.target.value)}
-                                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
-                                    >
-                                        <option value="" className="bg-neutral-900">Choose a vehicle...</option>
-                                        {AVAILABLE_CARS.map((car) => (
-                                            <option key={car.id} value={car.id} className="bg-neutral-900">
-                                                {car.name} - {car.category}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Date & Time Selection */}
-                        <div className="space-y-6 pt-6 border-t border-primary/20">
-                            <div className="flex items-center gap-3 mb-6">
-                                <Calendar className="w-6 h-6 text-primary" />
-                                <h3 className="text-2xl font-serif font-bold text-white">Schedule</h3>
-                            </div>
-                            
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label htmlFor="date" className="block text-sm font-medium text-white/70 mb-2">
-                                        Preferred Date *
+                                    <label htmlFor="makeModel" className="block text-sm font-medium text-white/70 mb-2">
+                                        Make & Model *
                                     </label>
                                     <div className="relative">
-                                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
+                                        <Car className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
                                         <input
-                                            type="date"
-                                            id="date"
-                                            name="date"
+                                            type="text"
+                                            id="makeModel"
+                                            name="makeModel"
                                             required
-                                            value={selectedDate}
-                                            onChange={(e) => setSelectedDate(e.target.value)}
-                                            min={new Date().toISOString().split('T')[0]}
-                                            className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all [color-scheme:dark]"
+                                            value={makeModel}
+                                            onChange={(e) => setMakeModel(e.target.value)}
+                                            className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                            placeholder="e.g. Mercedes-Benz G63"
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <label htmlFor="time" className="block text-sm font-medium text-white/70 mb-2">
-                                        Preferred Time *
+                                    <label htmlFor="year" className="block text-sm font-medium text-white/70 mb-2">
+                                        Year *
                                     </label>
                                     <div className="relative">
-                                        <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
-                                        <select
-                                            id="time"
-                                            name="time"
+                                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
+                                        <input
+                                            type="number"
+                                            id="year"
+                                            name="year"
                                             required
-                                            value={selectedTime}
-                                            onChange={(e) => setSelectedTime(e.target.value)}
-                                            className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+                                            value={year}
+                                            onChange={(e) => setYear(e.target.value)}
+                                            className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                            placeholder="2024"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label htmlFor="price" className="block text-sm font-medium text-white/70 mb-2">
+                                        Asking Price (ETB) *
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 font-bold text-sm">ETB</div>
+                                        <input
+                                            type="number"
+                                            id="price"
+                                            name="price"
+                                            required
+                                            value={price}
+                                            onChange={(e) => setPrice(e.target.value)}
+                                            className="w-full pl-16 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                            placeholder="4,500,000"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label htmlFor="condition" className="block text-sm font-medium text-white/70 mb-2">
+                                        Vehicle Condition *
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                            id="condition"
+                                            name="condition"
+                                            required
+                                            value={condition}
+                                            onChange={(e) => setCondition(e.target.value)}
+                                            className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
                                         >
-                                            <option value="" className="bg-neutral-900">Select time...</option>
-                                            <option value="09:00" className="bg-neutral-900">9:00 AM</option>
-                                            <option value="10:00" className="bg-neutral-900">10:00 AM</option>
-                                            <option value="11:00" className="bg-neutral-900">11:00 AM</option>
-                                            <option value="12:00" className="bg-neutral-900">12:00 PM</option>
-                                            <option value="13:00" className="bg-neutral-900">1:00 PM</option>
-                                            <option value="14:00" className="bg-neutral-900">2:00 PM</option>
-                                            <option value="15:00" className="bg-neutral-900">3:00 PM</option>
-                                            <option value="16:00" className="bg-neutral-900">4:00 PM</option>
-                                            <option value="17:00" className="bg-neutral-900">5:00 PM</option>
-                                            <option value="18:00" className="bg-neutral-900">6:00 PM</option>
+                                            <option value="New" className="bg-neutral-900">Brand New</option>
+                                            <option value="Used" className="bg-neutral-900">Used</option>
                                         </select>
                                     </div>
                                 </div>
@@ -309,36 +307,35 @@ export default function TestDrivePage() {
                         <div className="space-y-6 pt-6 border-t border-primary/20">
                             <div className="flex items-center gap-3 mb-6">
                                 <MapPin className="w-6 h-6 text-primary" />
-                                <h3 className="text-2xl font-serif font-bold text-white">Additional Details</h3>
+                                <h3 className="text-2xl font-serif font-bold text-white">Location & Details</h3>
                             </div>
-                            
+
                             <div>
                                 <label htmlFor="location" className="block text-sm font-medium text-white/70 mb-2">
-                                    Preferred Location
+                                    Vehicle Location
                                 </label>
                                 <div className="relative">
                                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
-                                    <select
+                                    <input
+                                        type="text"
                                         id="location"
                                         name="location"
-                                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
-                                    >
-                                        <option value="showroom" className="bg-neutral-900">Showroom (Bole, Addis Ababa)</option>
-                                        <option value="delivery" className="bg-neutral-900">Home/Office Delivery</option>
-                                    </select>
+                                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                        placeholder="e.g. Bole, Addis Ababa"
+                                    />
                                 </div>
                             </div>
 
                             <div>
                                 <label htmlFor="notes" className="block text-sm font-medium text-white/70 mb-2">
-                                    Additional Notes or Special Requests
+                                    Vehicle Description & Features
                                 </label>
                                 <textarea
                                     id="notes"
                                     name="notes"
                                     rows={4}
                                     className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all resize-none"
-                                    placeholder="Any specific features you'd like to test or questions about the vehicle..."
+                                    placeholder="Describe your vehicle's condition, features, and history..."
                                 />
                             </div>
                         </div>
@@ -351,7 +348,7 @@ export default function TestDrivePage() {
                             className="w-full py-4 bg-primary text-background hover:bg-accent font-bold text-sm uppercase tracking-[0.3em] rounded-xl transition-all duration-300 flex items-center justify-center gap-3 hover:shadow-[0_0_30px_rgba(187,161,79,0.5)] mt-8"
                         >
                             <Send className="w-5 h-5" />
-                            Book Test Drive
+                            Submit Ad
                         </motion.button>
                     </motion.form>
                 </div>
@@ -362,9 +359,9 @@ export default function TestDrivePage() {
                 <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
                 <div className="max-w-7xl mx-auto px-8 md:px-16 relative z-10">
                     <div className="text-center mb-16">
-                        <span className="text-primary text-xs uppercase tracking-[0.3em] font-bold mb-4 block">What to Expect</span>
+                        <span className="text-primary text-xs uppercase tracking-[0.3em] font-bold mb-4 block">Selling with Us</span>
                         <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-[0.05em] text-white mb-4">
-                            TEST DRIVE <span className="text-primary italic">EXPERIENCE</span>
+                            THE AUTOLINK <span className="text-primary italic">ADVANTAGE</span>
                         </h2>
                         <div className="h-0.5 w-24 bg-primary/40 mx-auto mt-8" />
                     </div>
@@ -372,18 +369,18 @@ export default function TestDrivePage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                title: "Personalized Service",
-                                desc: "Our expert team will guide you through every feature and answer all your questions.",
+                                title: "Premium Visibility",
+                                desc: "Showcase your vehicle to a curated audience of high-end buyers and collectors.",
                                 icon: User
                             },
                             {
-                                title: "Flexible Scheduling",
-                                desc: "Choose a date and time that works best for you. We accommodate your schedule.",
+                                title: "Professional Support",
+                                desc: "Our team assists with professional photography and listing optimization.",
                                 icon: Calendar
                             },
                             {
-                                title: "No Pressure",
-                                desc: "Enjoy a relaxed test drive experience with no sales pressure. Focus on the drive.",
+                                title: "Fast Turnaround",
+                                desc: "Connect with verified buyers quickly through our extensive network.",
                                 icon: Car
                             },
                         ].map((item, index) => (

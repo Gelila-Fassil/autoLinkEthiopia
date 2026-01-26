@@ -5,6 +5,7 @@ import { PremiumCarCard } from "@/components/car-card-premium"
 import { InventoryGallery } from "@/components/inventory-gallery"
 import { PremiumCarousel } from "@/components/premium-carousel"
 import { CinematicGallery } from "@/components/cinematic-gallery"
+import { CarRentalSection } from "@/components/car-rental-section"
 import { motion } from "framer-motion"
 import { ShinyText } from "@/components/ui/shiny-text"
 import { Footer } from "@/components/footer"
@@ -61,7 +62,7 @@ const PREMIUM_CARS = [
         year: "2025",
         owner: "Selam T."
     },
-     {
+    {
         id: 103,
         name: "McLaren 750S Spider",
         category: "Supercar",
@@ -186,6 +187,9 @@ export default function InventoryPage() {
                 </div>
                 <InventoryGallery />
             </section>
+
+            {/* Car Rental Section */}
+            <CarRentalSection />
 
             {/* Cinematic Gallery Section */}
             <CinematicGallery />
