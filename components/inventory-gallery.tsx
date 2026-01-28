@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 const CARS = [
   {
@@ -88,7 +89,7 @@ export function InventoryGallery() {
                 )}>
                   {/* Animated gradient overlay */}
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                  
+
                   {/* Shimmer border effect */}
                   <div className="absolute inset-0 rounded-3xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none">
                     <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-primary/20 to-transparent gold-shimmer" />
@@ -97,10 +98,12 @@ export function InventoryGallery() {
                   <CardItem translateZ="50" className="w-full relative z-10">
                     <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-neutral-800 to-black group-hover/card:border-primary/60 transition-all duration-500">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
-                      <img
+                      <Image
                         src={car.image || "/placeholder.svg"}
                         alt={car.name}
-                        className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700"
+                        fill
+                        className="object-cover group-hover/card:scale-110 transition-transform duration-700"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                       {/* Featured badge */}
                       {isFeatured && (
@@ -143,7 +146,7 @@ export function InventoryGallery() {
                           {car.price}
                         </CardItem>
                       </div>
-                      
+
                       <Link href={`/inventory/${car.id}`} className="w-full">
                         <CardItem
                           translateZ="40"

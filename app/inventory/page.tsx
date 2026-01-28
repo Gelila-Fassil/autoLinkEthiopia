@@ -21,7 +21,7 @@ const PREMIUM_CARS = [
         name: "Ferrari SF90 Stradale",
         category: "Hypercar",
         price: "$2,500",
-        image: "/ferrari-sf90.jpg",
+        image: "https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=1000",
         year: "2024",
         owner: "Dawit G."
     },
@@ -30,7 +30,7 @@ const PREMIUM_CARS = [
         name: "Lamborghini Revuelto",
         category: "Supercar",
         price: "$3,200",
-        image: "/lamborghini-revuelto.jpg",
+        image: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf0a3?auto=format&fit=crop&q=80&w=1000",
         year: "2025",
         owner: "Selam T."
     },
@@ -51,25 +51,6 @@ const PREMIUM_CARS = [
         image: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=1000",
         year: "2025",
         owner: "Elias K."
-    },
-
-    {
-        id: 102,
-        name: "Lamborghini Revuelto",
-        category: "Supercar",
-        price: "$3,200",
-        image: "/lamborghini-revuelto.jpg",
-        year: "2025",
-        owner: "Selam T."
-    },
-    {
-        id: 103,
-        name: "McLaren 750S Spider",
-        category: "Supercar",
-        price: "$2,800",
-        image: "https://images.unsplash.com/photo-1621135802920-133df287f89c?auto=format&fit=crop&q=80&w=1000",
-        year: "2024",
-        owner: "Abel M."
     }
 ]
 

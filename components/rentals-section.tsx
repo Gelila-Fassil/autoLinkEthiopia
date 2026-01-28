@@ -3,6 +3,7 @@
 import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card"
 import { Home, Shield, MapPin } from "lucide-react"
 import { Boxes } from "@/components/ui/background-boxes"
+import Image from "next/image"
 
 const PROPERTIES = [
   {
@@ -57,10 +58,12 @@ export function RentalsSection() {
           <div className="relative h-[400px] w-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl group">
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
             <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20" />
-            <img 
-              src="/bole-penthouse.png" 
-              alt="Luxury Penthouse Interior" 
+            <Image
+              src="/bole-penthouse.png"
+              alt="Luxury Penthouse Interior"
+              fill
               className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
         </div>
@@ -71,7 +74,7 @@ export function RentalsSection() {
               <CardBody className="relative bg-gradient-to-br from-neutral-900 via-neutral-950 to-black border-2 border-primary/30 hover:border-primary/80 w-auto h-auto p-0 rounded-3xl overflow-hidden group/card transition-all duration-500 hover:-translate-y-3 shadow-[0_0_60px_-20px_rgba(187,161,79,0.2)] hover:shadow-[0_0_100px_-20px_rgba(187,161,79,0.5)] backdrop-blur-sm">
                 {/* Animated gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
-                
+
                 {/* Shimmer border effect */}
                 <div className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none z-10">
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent gold-shimmer" />
@@ -80,10 +83,12 @@ export function RentalsSection() {
                 <CardItem translateZ="50" className="w-full relative z-10">
                   <div className="relative aspect-[16/9] overflow-hidden rounded-t-3xl">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-20" />
-                    <img
+                    <Image
                       src={property.image || "/placeholder.svg"}
                       alt={property.title}
+                      fill
                       className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                     <div className="absolute top-6 left-6 z-30">
                       <CardItem

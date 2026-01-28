@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { ArrowRight, Star } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card"
 import { cn } from "@/lib/utils" // Assuming cn utility is available here
 
@@ -68,10 +69,12 @@ export function PremiumCarCard({ car, isFeatured }: { car: CarProps, isFeatured?
                     <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full scale-75 opacity-0 group-hover/card:opacity-100 transition-opacity duration-1000" />
 
                     <div className="relative aspect-[16/10] overflow-hidden rounded-t-3xl border-b-2 border-primary/20">
-                        <img
+                        <Image
                             src={car.image || "/placeholder.svg"}
                             alt={car.name}
+                            fill
                             className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700 ease-out"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                         {/* Reduced gradient opacity for better car visibility */}
                         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/60 via-transparent to-transparent opacity-80 group-hover/card:opacity-40 transition-opacity duration-500" />

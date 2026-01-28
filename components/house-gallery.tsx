@@ -4,6 +4,7 @@ import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card"
 import { ArrowRight, BedDouble, Bath, Maximize } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import Image from "next/image"
 
 const HOUSES = [
   {
@@ -11,7 +12,7 @@ const HOUSES = [
     title: "Luxury Hillside Villa",
     location: "Entoto, Addis Ababa",
     price: "$8,500/mo",
-    image: "/bole-penthouse.png", // Using existing placeholder
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=1000",
     bedrooms: 5,
     bathrooms: 6,
     sqft: "5,200"
@@ -21,7 +22,7 @@ const HOUSES = [
     title: "Modern Minimalist Home",
     location: "Bole, Addis Ababa",
     price: "$6,200/mo",
-    image: "/kazanchis-villa.png", // Using existing placeholder
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1000",
     bedrooms: 4,
     bathrooms: 4,
     sqft: "3,800"
@@ -31,7 +32,7 @@ const HOUSES = [
     title: "Classic Diplomatic Residence",
     location: "Old Airport, Addis Ababa",
     price: "$12,000/mo",
-    image: "/bole-penthouse.png",
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=1000",
     bedrooms: 7,
     bathrooms: 8,
     sqft: "8,500"
@@ -41,7 +42,7 @@ const HOUSES = [
     title: "Urban Penthouse Suite",
     location: "Kazanchis, Addis Ababa",
     price: "$4,500/mo",
-    image: "/kazanchis-villa.png",
+    image: "https://images.unsplash.com/photo-1600607687940-477a284e96d3?auto=format&fit=crop&q=80&w=1000",
     bedrooms: 3,
     bathrooms: 3,
     sqft: "2,400"
@@ -51,7 +52,7 @@ const HOUSES = [
     title: "Lakeview Retreat",
     location: "Bishoftu",
     price: "$3,800/mo",
-    image: "/bole-penthouse.png",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1000",
     bedrooms: 4,
     bathrooms: 3,
     sqft: "3,200"
@@ -61,7 +62,7 @@ const HOUSES = [
     title: "Gated Community Mansion",
     location: "CMC, Addis Ababa",
     price: "$5,500/mo",
-    image: "/kazanchis-villa.png",
+    image: "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?auto=format&fit=crop&q=80&w=1000",
     bedrooms: 6,
     bathrooms: 5,
     sqft: "4,800"
@@ -87,7 +88,7 @@ export function HouseGallery() {
                 )}>
                   {/* Animated gradient overlay */}
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                  
+
                   {/* Shimmer border effect */}
                   <div className="absolute inset-0 rounded-3xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none">
                     <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-primary/20 to-transparent gold-shimmer" />
@@ -96,10 +97,12 @@ export function HouseGallery() {
                   <CardItem translateZ="50" className="w-full relative z-10">
                     <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-neutral-800 to-black group-hover/card:border-primary/60 transition-all duration-500">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
-                      <img
+                      <Image
                         src={house.image || "/placeholder.svg"}
                         alt={house.title}
-                        className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700"
+                        fill
+                        className="object-cover group-hover/card:scale-110 transition-transform duration-700"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                       {/* Featured badge */}
                       {isFeatured && (
@@ -107,13 +110,13 @@ export function HouseGallery() {
                           Premium
                         </div>
                       )}
-                      
+
                       {/* Location Badge */}
                       <div className="absolute bottom-4 left-4 z-20 overflow-hidden rounded-full border border-white/20">
-                         <div className="bg-black/60 backdrop-blur-md px-4 py-1.5 text-xs font-medium text-white flex items-center gap-1">
-                           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"/>
-                           {house.location}
-                         </div>
+                        <div className="bg-black/60 backdrop-blur-md px-4 py-1.5 text-xs font-medium text-white flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                          {house.location}
+                        </div>
                       </div>
                     </div>
                   </CardItem>
@@ -154,7 +157,7 @@ export function HouseGallery() {
                         </CardItem>
                         <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Monthly</span>
                       </div>
-                      
+
                       <Link href={`/houses/${house.id}`} className="w-full">
                         <CardItem
                           translateZ="40"

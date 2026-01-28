@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
+import { LayoutGrid } from "lucide-react";
 import {
   AnimatePresence,
   type MotionValue,
@@ -78,7 +78,7 @@ const FloatingDockMobile = ({
         onClick={() => setOpen(!open)}
         className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900 border border-primary/20 hover:border-primary/60 transition-colors"
       >
-        <IconLayoutNavbarCollapse className="h-5 w-5 text-primary" />
+        <LayoutGrid className="h-5 w-5 text-primary" />
       </button>
     </div>
   );

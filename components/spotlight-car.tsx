@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion"
 import { Gauge, Zap, Trophy, ChevronRight } from "lucide-react"
 import { useRef } from "react"
 import { ShinyText } from "./ui/shiny-text"
+import Image from "next/image"
 
 export function SpotlightCar() {
   const containerRef = useRef<HTMLElement>(null)
@@ -73,10 +74,12 @@ export function SpotlightCar() {
           <motion.div style={{ y }} className="relative">
             <div className="relative aspect-square lg:aspect-video rounded-3xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] border border-white/5">
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-              <img
+              <Image
                 src="/futuristic_luxury_concept_car_dark.png"
                 alt="Autolink Genesis"
+                fill
                 className="w-full h-full object-cover scale-105 hover:scale-100 transition-transform duration-1000"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
               />
             </div>
           </motion.div>

@@ -33,7 +33,7 @@ export default function CarDetailPage() {
             price: "$2,500",
             year: "2024",
             category: "Hypercar",
-            image: "/ferrari-sf90.jpg",
+            image: "https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=1000",
             description: "The SF90 Stradale is the first ever Ferrari to feature PHEV (Plug-in Hybrid Electric Vehicle) architecture. It represents a new paradigm for performance and technology.",
             specs: [
                 { label: "Engine", value: "4.0L V8 Hybrid" },
