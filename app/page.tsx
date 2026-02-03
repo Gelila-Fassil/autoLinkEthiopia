@@ -2,13 +2,11 @@
 
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import dynamic from "next/dynamic"
-
-const HeroSection = dynamic(() => import("@/components/hero-section").then(mod => mod.HeroSection), { ssr: false })
-const SpotlightCar = dynamic(() => import("@/components/spotlight-car").then(mod => mod.SpotlightCar), { ssr: false })
-const InventoryGallery = dynamic(() => import("@/components/inventory-gallery").then(mod => mod.InventoryGallery), { ssr: false })
-const RentalsSection = dynamic(() => import("@/components/rentals-section").then(mod => mod.RentalsSection), { ssr: false })
-const HouseGallery = dynamic(() => import("@/components/house-gallery").then(mod => mod.HouseGallery), { ssr: false })
+import { HeroSection } from "@/components/hero-section"
+import { SpotlightCar } from "@/components/spotlight-car"
+import { InventoryGallery } from "@/components/inventory-gallery"
+import { RentalsSection } from "@/components/rentals-section"
+import { HouseGallery } from "@/components/house-gallery"
 
 export default function LandingPage() {
   return (

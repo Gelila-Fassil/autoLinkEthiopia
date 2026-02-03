@@ -56,7 +56,7 @@ export default function AdPage() {
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target
+        const { name, value } = e.target as any
         setFormData(prev => ({ ...prev, [name]: value }))
     }
 
