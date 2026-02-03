@@ -5,7 +5,7 @@ import { Footer } from "@/components/footer"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ShinyText } from "@/components/ui/shiny-text"
 import Image from "next/image"
-import { useRef, useState } from "react"
+import { useRef, useState, FormEvent } from "react"
 import { Calendar, Clock, Car, MapPin, User, Phone, Mail, Send } from "lucide-react"
 
 const AVAILABLE_CARS = [
@@ -33,6 +33,51 @@ export default function TestDrivePage() {
     const [year, setYear] = useState("")
     const [price, setPrice] = useState("")
     const [condition, setCondition] = useState("Used")
+    const [listingType, setListingType] = useState<'car' | 'home'>('car')
+
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [successMessage, setSuccessMessage] = useState<string | null>(null)
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        setIsSubmitting(true)
+        setErrorMessage(null)
+        setSuccessMessage(null)
+
+        try {
+            const form = new FormData(e.currentTarget as HTMLFormElement)
+            const payload: any = Object.fromEntries(form.entries())
+
+            // Parse number fields when present
+            if (payload.price) payload.price = Number(payload.price)
+            if (payload.year) payload.year = Number(payload.year)
+            if (payload.beds) payload.beds = Number(payload.beds)
+            if (payload.baths) payload.baths = Number(payload.baths)
+            if (payload.area) payload.area = Number(payload.area)
+            if (payload.rent) payload.rent = Number(payload.rent)
+
+            payload.listingType = listingType
+
+            const res = await fetch('/api/listings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            })
+
+            const data = await res.json()
+            if (!res.ok) {
+                setErrorMessage(data?.errors?.join?.(', ') || data?.error || 'Submission failed')
+            } else {
+                setSuccessMessage('Listing created successfully')
+                ;(e.currentTarget as HTMLFormElement).reset()
+            }
+        } catch (err) {
+            setErrorMessage('An unexpected error occurred')
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     return (
         <main className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
@@ -128,13 +173,13 @@ export default function TestDrivePage() {
                 <div className="absolute inset-0 digital-pattern opacity-5 pointer-events-none" />
                 <div className="max-w-5xl mx-auto px-8 md:px-16 relative z-10">
                     <div className="text-center mb-12">
-                        <span className="text-primary text-xs uppercase tracking-[0.3em] font-bold mb-4 block">List Your Vehicle</span>
+                        <span className="text-primary text-xs uppercase tracking-[0.3em] font-bold mb-4 block">List Your Rental</span>
                         <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-[0.05em] text-white mb-4">
                             SUBMIT YOUR <span className="text-primary italic">LISTING</span>
                         </h2>
                         <div className="h-0.5 w-24 bg-primary/40 mx-auto mt-8" />
                         <p className="text-lg text-white/70 mt-8 max-w-2xl mx-auto">
-                            Fill out the form below to place your ad. Our team will review and publish your listing within 24 hours.
+                            Fill out the form below to place your ad for a rental (car or home). Our team will review and publish your listing within 24 hours.
                         </p>
                     </div>
 
@@ -143,8 +188,40 @@ export default function TestDrivePage() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
+                        onSubmit={handleSubmit}
                         className="space-y-8 p-8 md:p-12 rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-neutral-900/50 to-black/50 backdrop-blur-sm"
                     >
+                        <input type="hidden" name="listingType" value={listingType} />
+
+                        {/* Messages */}
+                        {successMessage && (
+                            <div className="p-3 rounded-lg bg-green-600 text-white font-medium">{successMessage}</div>
+                        )}
+                        {errorMessage && (
+                            <div className="p-3 rounded-lg bg-red-600 text-white font-medium">{errorMessage}</div>
+                        )}
+
+                        {/* Listing Type Toggle */}
+                        <div className="flex items-center gap-4 mb-2">
+                            <h3 className="text-2xl font-serif font-bold text-white">Listing Type</h3>
+                            <div className="ml-auto flex gap-2 bg-white/5 p-1 rounded-xl">
+                                <button
+                                    type="button"
+                                    onClick={() => setListingType('car')}
+                                    className={`px-4 py-2 rounded-lg font-medium text-sm ${listingType === 'car' ? 'bg-primary text-background' : 'text-white/70'}`}
+                                >
+                                    Rent Car
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setListingType('home')}
+                                    className={`px-4 py-2 rounded-lg font-medium text-sm ${listingType === 'home' ? 'bg-primary text-background' : 'text-white/70'}`}
+                                >
+                                    Rent Home
+                                </button>
+                            </div>
+                        </div>
+
                         {/* Personal Information */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-3 mb-6">
@@ -217,138 +294,192 @@ export default function TestDrivePage() {
                             </div>
                         </div>
 
-                        {/* Vehicle Details */}
-                        <div className="space-y-6 pt-6 border-t border-primary/20">
-                            <div className="flex items-center gap-3 mb-6">
-                                <Car className="w-6 h-6 text-primary" />
-                                <h3 className="text-2xl font-serif font-bold text-white">Vehicle Details</h3>
-                            </div>
+                        {/* Conditional: Car Fields */}
+                        {listingType === 'car' && (
+                            <div className="space-y-6 pt-6 border-t border-primary/20">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <Car className="w-6 h-6 text-primary" />
+                                    <h3 className="text-2xl font-serif font-bold text-white">Vehicle Details</h3>
+                                </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label htmlFor="makeModel" className="block text-sm font-medium text-white/70 mb-2">
-                                        Make & Model *
-                                    </label>
-                                    <div className="relative">
-                                        <Car className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
-                                        <input
-                                            type="text"
-                                            id="makeModel"
-                                            name="makeModel"
-                                            required
-                                            value={makeModel}
-                                            onChange={(e) => setMakeModel(e.target.value)}
-                                            className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
-                                            placeholder="e.g. Mercedes-Benz G63"
-                                        />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label htmlFor="makeModel" className="block text-sm font-medium text-white/70 mb-2">
+                                            Make & Model *
+                                        </label>
+                                        <div className="relative">
+                                            <Car className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
+                                            <input
+                                                type="text"
+                                                id="makeModel"
+                                                name="makeModel"
+                                                required
+                                                value={makeModel}
+                                                onChange={(e) => setMakeModel(e.target.value)}
+                                                className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                                placeholder="e.g. Mercedes-Benz G63"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="year" className="block text-sm font-medium text-white/70 mb-2">
+                                            Year *
+                                        </label>
+                                        <div className="relative">
+                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
+                                            <input
+                                                type="number"
+                                                id="year"
+                                                name="year"
+                                                required
+                                                value={year}
+                                                onChange={(e) => setYear(e.target.value)}
+                                                className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                                placeholder="2024"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <label htmlFor="year" className="block text-sm font-medium text-white/70 mb-2">
-                                        Year *
-                                    </label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
-                                        <input
-                                            type="number"
-                                            id="year"
-                                            name="year"
-                                            required
-                                            value={year}
-                                            onChange={(e) => setYear(e.target.value)}
-                                            className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
-                                            placeholder="2024"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label htmlFor="price" className="block text-sm font-medium text-white/70 mb-2">
-                                        Asking Price (ETB) *
-                                    </label>
-                                    <div className="relative">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 font-bold text-sm">ETB</div>
-                                        <input
-                                            type="number"
-                                            id="price"
-                                            name="price"
-                                            required
-                                            value={price}
-                                            onChange={(e) => setPrice(e.target.value)}
-                                            className="w-full pl-16 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
-                                            placeholder="4,500,000"
-                                        />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label htmlFor="price" className="block text-sm font-medium text-white/70 mb-2">
+                                            Asking Price (ETB) *
+                                        </label>
+                                        <div className="relative">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 font-bold text-sm">ETB</div>
+                                            <input
+                                                type="number"
+                                                id="price"
+                                                name="price"
+                                                required
+                                                value={price}
+                                                onChange={(e) => setPrice(e.target.value)}
+                                                className="w-full pl-16 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                                                placeholder="4,500"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="condition" className="block text-sm font-medium text-white/70 mb-2">
+                                            Vehicle Condition *
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                id="condition"
+                                                name="condition"
+                                                required
+                                                value={condition}
+                                                onChange={(e) => setCondition(e.target.value)}
+                                                className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+                                            >
+                                                <option value="New" className="bg-neutral-900">Brand New</option>
+                                                <option value="Used" className="bg-neutral-900">Used</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <label htmlFor="condition" className="block text-sm font-medium text-white/70 mb-2">
-                                        Vehicle Condition *
-                                    </label>
-                                    <div className="relative">
-                                        <select
-                                            id="condition"
-                                            name="condition"
-                                            required
-                                            value={condition}
-                                            onChange={(e) => setCondition(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
-                                        >
-                                            <option value="New" className="bg-neutral-900">Brand New</option>
-                                            <option value="Used" className="bg-neutral-900">Used</option>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label htmlFor="transmission" className="block text-sm font-medium text-white/70 mb-2">Transmission</label>
+                                        <select id="transmission" name="transmission" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none">
+                                            <option>Automatic</option>
+                                            <option>Manual</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="fuel" className="block text-sm font-medium text-white/70 mb-2">Fuel Type</label>
+                                        <select id="fuel" name="fuel" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all appearance-none">
+                                            <option>Petrol</option>
+                                            <option>Diesel</option>
+                                            <option>Hybrid</option>
+                                            <option>Electric</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
-                        {/* Additional Information */}
-                        <div className="space-y-6 pt-6 border-t border-primary/20">
-                            <div className="flex items-center gap-3 mb-6">
-                                <MapPin className="w-6 h-6 text-primary" />
-                                <h3 className="text-2xl font-serif font-bold text-white">Location & Details</h3>
-                            </div>
+                        {/* Conditional: Home Fields */}
+                        {listingType === 'home' && (
+                            <div className="space-y-6 pt-6 border-t border-primary/20">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <MapPin className="w-6 h-6 text-primary" />
+                                    <h3 className="text-2xl font-serif font-bold text-white">Property Details</h3>
+                                </div>
 
-                            <div>
-                                <label htmlFor="location" className="block text-sm font-medium text-white/70 mb-2">
-                                    Vehicle Location
-                                </label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
-                                    <input
-                                        type="text"
-                                        id="location"
-                                        name="location"
-                                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
-                                        placeholder="e.g. Bole, Addis Ababa"
-                                    />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label htmlFor="title" className="block text-sm font-medium text-white/70 mb-2">Listing Title *</label>
+                                        <input id="title" name="title" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none" placeholder="e.g. 3 Bedroom House in Bole" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="type" className="block text-sm font-medium text-white/70 mb-2">Property Type *</label>
+                                        <select id="type" name="propertyType" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none appearance-none">
+                                            <option>House</option>
+                                            <option>Apartment</option>
+                                            <option>Studio</option>
+                                            <option>Shared</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div>
+                                        <label htmlFor="beds" className="block text-sm font-medium text-white/70 mb-2">Bedrooms</label>
+                                        <input id="beds" name="beds" type="number" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white" placeholder="2" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="baths" className="block text-sm font-medium text-white/70 mb-2">Bathrooms</label>
+                                        <input id="baths" name="baths" type="number" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white" placeholder="1" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="area" className="block text-sm font-medium text-white/70 mb-2">Area (sqm)</label>
+                                        <input id="area" name="area" type="number" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white" placeholder="120" />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label htmlFor="rent" className="block text-sm font-medium text-white/70 mb-2">Rent (ETB/month) *</label>
+                                        <div className="relative">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 font-bold text-sm">ETB</div>
+                                            <input id="rent" name="rent" type="number" className="w-full pl-16 pr-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white" placeholder="20,000" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="availability" className="block text-sm font-medium text-white/70 mb-2">Availability</label>
+                                        <select id="availability" name="availability" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white focus:outline-none appearance-none">
+                                            <option>Immediate</option>
+                                            <option>From Date</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="address" className="block text-sm font-medium text-white/70 mb-2">Address</label>
+                                    <input id="address" name="address" type="text" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white" placeholder="e.g. Bole, Addis Ababa" />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="homeNotes" className="block text-sm font-medium text-white/70 mb-2">Property Description & Amenities</label>
+                                    <textarea id="homeNotes" name="homeNotes" rows={4} className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white resize-none" placeholder="Describe the property, amenities, and any additional info..." />
                                 </div>
                             </div>
-
-                            <div>
-                                <label htmlFor="notes" className="block text-sm font-medium text-white/70 mb-2">
-                                    Vehicle Description & Features
-                                </label>
-                                <textarea
-                                    id="notes"
-                                    name="notes"
-                                    rows={4}
-                                    className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all resize-none"
-                                    placeholder="Describe your vehicle's condition, features, and history..."
-                                />
-                            </div>
-                        </div>
+                        )}
 
                         {/* Submit Button */}
                         <motion.button
                             type="submit"
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className="w-full py-4 bg-primary text-background hover:bg-accent font-bold text-sm uppercase tracking-[0.3em] rounded-xl transition-all duration-300 flex items-center justify-center gap-3 hover:shadow-[0_0_30px_rgba(187,161,79,0.5)] mt-8"
+                            disabled={isSubmitting}
+                            aria-busy={isSubmitting}
+                            className="w-full py-4 bg-primary text-background hover:bg-accent disabled:opacity-60 font-bold text-sm uppercase tracking-[0.3em] rounded-xl transition-all duration-300 flex items-center justify-center gap-3 hover:shadow-[0_0_30px_rgba(187,161,79,0.5)] mt-8"
                         >
                             <Send className="w-5 h-5" />
-                            Submit Ad
+                            {isSubmitting ? 'Creating...' : 'Create Listing'}
                         </motion.button>
                     </motion.form>
                 </div>

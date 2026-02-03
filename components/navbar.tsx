@@ -75,21 +75,21 @@ export function Navbar() {
           {/* Right: Book a Test Drive Button */}
           <div className="flex justify-end">
             <div className="hidden lg:block">
-              <button 
-                onClick={() => setIsTestDriveModalOpen(true)}
-                className="px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-background transition-all duration-300 text-sm uppercase tracking-wider font-semibold whitespace-nowrap"
+              <Link
+                href="/ad"
+                className="px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-background transition-all duration-300 text-sm uppercase tracking-wider font-semibold whitespace-nowrap block"
               >
                 Place Your Ad
-              </button>
+              </Link>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Test Drive Modal */}
-      <TestDriveModal 
-        isOpen={isTestDriveModalOpen} 
-        onClose={() => setIsTestDriveModalOpen(false)} 
+      <TestDriveModal
+        isOpen={isTestDriveModalOpen}
+        onClose={() => setIsTestDriveModalOpen(false)}
       />
     </>
   )
