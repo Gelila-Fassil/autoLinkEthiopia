@@ -60,11 +60,33 @@ export default function AdPage() {
         setFormData(prev => ({ ...prev, [name]: value }))
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        console.log("Form submitted:", formData)
-        alert("Ad submitted successfully (mock)!")
+    const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Optional: Add a loading state here
+    try {
+        const response = await fetch("/api/ads", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                ...formData, 
+                category: activeTab // Explicitly send if it's a 'car' or 'house'
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert(`Success! Ad "${formData.name}" has been submitted for review.`);
+            // Optional: reset form or redirect
+        } else {
+            const errorData = await response.json();
+            alert("Error: " + (errorData.error || "Failed to submit ad"));
+        }
+    } catch (error) {
+        console.error("Submission error:", error);
+        alert("Network error. Please try again.");
     }
+};
 
     return (
         <main className="min-h-screen bg-background text-foreground pt-32 pb-20 px-4 md:px-8">

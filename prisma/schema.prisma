@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Ad {
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now())
+  fullName          String
+  phoneNumber       String
+  category          String   
+  name              String
+  description       String
+  price             String
+  currency          String
+  advertisementType String   
+  
+  // Optional Specifics
+  year              String?
+  mileage           String?
+  transmission      String?
+  fuelType          String?
+  bedrooms          String?
+  bathrooms         String?
+  area              String?
+
+  status            String   @default("PENDING")
+}
