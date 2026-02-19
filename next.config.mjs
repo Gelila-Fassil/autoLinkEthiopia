@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone", 
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -7,6 +8,6 @@ const nextConfig = {
     unoptimized: true,
   },
   transpilePackages: ["three", "@react-three/fiber", "@react-three/drei"],
-}
+};
 
-export default nextConfig
+export default nextConfig;
