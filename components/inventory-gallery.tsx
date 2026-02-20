@@ -6,60 +6,108 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import Image from "next/image"
+import { useEffect, useState } from "react"
 
-const CARS = [
+interface Car {
+  id: number
+  name: string
+  year: string
+  price: string
+  currency: string
+  bodyType: string
+  mileage: string
+  images: string[]
+}
+
+const MOCK_CARS: Car[] = [
   {
     id: 1,
     name: "Mercedes-Benz G63 AMG",
-    category: "Luxury SUV",
+    year: "2025",
     price: "$285,000",
-    image: "/black-mercedes-g-wagon.jpg",
-    year: "2025"
+    currency: "USD",
+    bodyType: "SUV",
+    mileage: "0",
+    images: ["/black-mercedes-g-wagon.jpg"]
   },
   {
     id: 2,
     name: "Porsche 911 GT3",
-    category: "Sports Car",
+    year: "2024",
     price: "$245,000",
-    image: "/white-porsche-911-gt3.jpg",
-    year: "2024"
+    currency: "USD",
+    bodyType: "Sports Car",
+    mileage: "0",
+    images: ["/white-porsche-911-gt3.jpg"]
   },
   {
     id: 3,
     name: "Range Rover SV",
-    category: "Luxury SUV",
+    year: "2025",
     price: "$210,000",
-    image: "/gold-range-rover.jpg",
-    year: "2025"
+    currency: "USD",
+    bodyType: "SUV",
+    mileage: "0",
+    images: ["/gold-range-rover.jpg"]
   },
   {
     id: 4,
     name: "Rolls-Royce Ghost",
-    category: "Ultra Luxury",
-    price: "$390,000",
-    image: "/rolls-royce-ghost-black.jpg",
     year: "2024",
+    price: "$390,000",
+    currency: "USD",
+    bodyType: "Ultra Luxury",
+    mileage: "0",
+    images: ["/rolls-royce-ghost-black.jpg"]
   },
-
   {
     id: 5,
     name: "Bentley Continental GT",
-    category: "Luxury Coupe",
+    year: "2024",
     price: "$240,000",
-    image: "/bentley-continental-gt-white.jpg",
-    year: "2024"
+    currency: "USD",
+    bodyType: "Luxury Coupe",
+    mileage: "0",
+    images: ["/bentley-continental-gt-white.jpg"]
   },
   {
     id: 6,
     name: "BMW M8 Competition",
-    category: "Sports Coupe",
+    year: "2025",
     price: "$140,000",
-    image: "/bmw-m8-competition-black.jpg",
-    year: "2025"
+    currency: "USD",
+    bodyType: "Sports Coupe",
+    mileage: "0",
+    images: ["/bmw-m8-competition-black.jpg"]
   },
 ]
 
 export function InventoryGallery() {
+  const [cars, setCars] = useState<Car[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchCars() {
+      try {
+        const res = await fetch('/api/cars?approved=true')
+        if (res.ok) {
+          const data = await res.json()
+          if (data.length > 0) {
+            setCars(data)
+          } else {
+            setCars(MOCK_CARS)
+          }
+        } else {
+          setCars(MOCK_CARS)
+        }
+      } catch {
+        setCars(MOCK_CARS)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCars()
+  }, [])
   return (
     <div className="w-full">
       <div className="max-w-7xl mx-auto">
@@ -75,7 +123,11 @@ export function InventoryGallery() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {CARS.map((car, index) => {
+          {loading ? (
+            <div className="col-span-full flex items-center justify-center py-20">
+              <div className="text-primary animate-pulse">Loading...</div>
+            </div>
+          ) : cars.map((car, index) => {
             const isFeatured = index % 3 === 0;
             return (
               <CardContainer key={car.id} className="inter-var w-full h-full" containerClassName="py-0">
@@ -99,7 +151,7 @@ export function InventoryGallery() {
                     <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-neutral-800 to-black group-hover/card:border-primary/60 transition-all duration-500">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
                       <Image
-                        src={car.image || "/placeholder.svg"}
+                        src={car.images?.[0] || "/placeholder.svg"}
                         alt={car.name}
                         fill
                         className="object-cover group-hover/card:scale-110 transition-transform duration-700"
@@ -132,7 +184,7 @@ export function InventoryGallery() {
                         className="text-primary text-sm uppercase tracking-[0.3em] font-bold flex items-center gap-3"
                       >
                         <span className="w-12 h-px bg-primary/50" />
-                        <span>{car.category}</span>
+                        <span>{car.bodyType}</span>
                         <span className="w-12 h-px bg-primary/50" />
                       </CardItem>
                     </div>
@@ -143,7 +195,7 @@ export function InventoryGallery() {
                           translateZ="30"
                           className="text-3xl md:text-3xl font-serif font-bold gold-gradient"
                         >
-                          {car.price}
+                          {car.currency} {car.price}
                         </CardItem>
                       </div>
 

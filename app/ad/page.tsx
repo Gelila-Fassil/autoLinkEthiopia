@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     Car,
@@ -18,13 +18,19 @@ import {
     Gauge,
     Calendar,
     Layers,
-    FileText
+    FileText,
+    X,
+    Loader2
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 export default function AdPage() {
     const [activeTab, setActiveTab] = useState<"car" | "house">("car")
+    const [images, setImages] = useState<string[]>([])
+    const [uploading, setUploading] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
     const [formData, setFormData] = useState({
         name: "",
         fullName: "",
@@ -50,9 +56,45 @@ export default function AdPage() {
         area: "250",
     })
 
-    // Mock upload handler
-    const handleUpload = (type: string) => {
-        console.log(`Uploading ${type}...`)
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (!files) return
+
+        setUploading(true)
+        const uploadedUrls: string[] = []
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i]
+            const reader = new FileReader()
+            
+            const base64 = await new Promise<string>((resolve) => {
+                reader.onload = () => {
+                    resolve(reader.result as string)
+                }
+                reader.readAsDataURL(file)
+            })
+
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64, type: activeTab })
+                })
+                if (res.ok) {
+                    const data = await res.json()
+                    uploadedUrls.push(data.url)
+                }
+            } catch (err) {
+                console.error('Upload failed:', err)
+            }
+        }
+
+        setImages(prev => [...prev, ...uploadedUrls])
+        setUploading(false)
+    }
+
+    const removeImage = (index: number) => {
+        setImages(prev => prev.filter((_, i) => i !== index))
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -63,21 +105,45 @@ export default function AdPage() {
     const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Optional: Add a loading state here
+    const endpoint = activeTab === "car" ? "/api/cars" : "/api/houses"
+    
     try {
-        const response = await fetch("/api/ads", {
+        const response = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 ...formData, 
-                category: activeTab // Explicitly send if it's a 'car' or 'house'
+                images: images,
             }),
         });
 
         if (response.ok) {
             const data = await response.json();
-            alert(`Success! Ad "${formData.name}" has been submitted for review.`);
-            // Optional: reset form or redirect
+            alert(`Success! ${activeTab === "car" ? "Car" : "House"} "${formData.name}" has been submitted for review.`);
+            setFormData({
+                name: "",
+                fullName: "",
+                phoneNumber: "",
+                year: "2022",
+                mileage: "50000",
+                speed: "120",
+                transmission: "Automatic",
+                fuelType: "Petrol",
+                bodyType: "Truck",
+                description: "",
+                price: "1000",
+                condition: "Excellent",
+                engine: "3.8L V6",
+                maintenance: "Frequent",
+                advertisementType: "For Sale",
+                currency: "ETB",
+                tags: "#Ford #F150 #2022",
+                houseType: "Apartment",
+                bedrooms: "3",
+                bathrooms: "2",
+                area: "250",
+            })
+            setImages([])
         } else {
             const errorData = await response.json();
             alert("Error: " + (errorData.error || "Failed to submit ad"));
@@ -363,22 +429,56 @@ export default function AdPage() {
                                 {activeTab === "car" ? "Car Images" : "House Images"}
                             </h2>
 
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleImageUpload}
+                                className="hidden"
+                            />
+
+                            {images.length > 0 && (
+                                <div className="grid grid-cols-3 gap-4 mb-4">
+                                    {images.map((url, idx) => (
+                                        <div key={idx} className="relative aspect-square rounded-xl overflow-hidden bg-neutral-900">
+                                            <Image src={url} alt={`Upload ${idx + 1}`} fill className="object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeImage(idx)}
+                                                className="absolute top-2 right-2 p-1 bg-red-600 rounded-full text-white hover:bg-red-700"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                             <div
                                 className="border-2 border-dashed border-primary/30 rounded-2xl p-10 flex flex-col items-center justify-center gap-4 hover:bg-primary/5 transition-all cursor-pointer group"
-                                onClick={() => handleUpload("images")}
+                                onClick={() => fileInputRef.current?.click()}
                             >
-                                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Plus className="w-8 h-8 text-primary" />
-                                </div>
-                                <p className="text-white/60 font-medium text-center">Add More Images</p>
+                                {uploading ? (
+                                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                                ) : (
+                                    <>
+                                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <Plus className="w-8 h-8 text-primary" />
+                                        </div>
+                                        <p className="text-white/60 font-medium text-center">Add More Images</p>
+                                    </>
+                                )}
                             </div>
 
                             <div className="mt-6 flex flex-col gap-4">
                                 <button
                                     type="button"
+                                    onClick={() => fileInputRef.current?.click()}
                                     className="w-full py-4 bg-primary text-background font-bold rounded-xl uppercase tracking-wider text-sm transition-all hover:bg-accent"
+                                    disabled={uploading}
                                 >
-                                    Choose {activeTab === "car" ? "Car" : "House"} Images
+                                    {uploading ? "Uploading..." : `Choose ${activeTab === "car" ? "Car" : "House"} Images`}
                                 </button>
                                 <p className="text-xs text-white/40 text-center">You can upload multiple images.</p>
                                 <p className="text-[10px] text-red-500/80 text-center uppercase tracking-tighter">Total image size cannot exceed 4.0MB. Please compress your images if needed.</p>

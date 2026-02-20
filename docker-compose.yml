@@ -1,7 +1,32 @@
 services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: autolinkUser
+      POSTGRES_PASSWORD: autolinkPassword
+      POSTGRES_DB: autolink_db
+    healthcheck: # Added healthcheck
+      test: ["CMD-SHELL", "pg_isready -U autolinkUser -d autolink_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   web:
     build: .
     ports:
       - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://autolinkUser:autolinkPassword@db:5432/autolink_db
+    depends_on:
+      db:
+        condition: service_healthy # Tells web to wait for the healthcheck
     restart: always
     container_name: nextjs_frontend
+
+volumes:
+  postgres_data:
