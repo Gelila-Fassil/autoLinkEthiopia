@@ -72,16 +72,8 @@ export function Navbar() {
             />
           </div>
 
-          {/* Right: Book a Test Drive Button */}
+          {/* Right: Empty for balance */}
           <div className="flex justify-end">
-            <div className="hidden lg:block">
-              <Link
-                href="/ad"
-                className="px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-background transition-all duration-300 text-sm uppercase tracking-wider font-semibold whitespace-nowrap block"
-              >
-                Place Your Ad
-              </Link>
-            </div>
           </div>
         </div>
       </nav>

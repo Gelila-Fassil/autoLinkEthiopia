@@ -6,15 +6,23 @@ import { Navbar } from "@/components/navbar"
 import { Check, X, Trash2, Car, Home, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import imageUrlBuilder from '@sanity/image-url'
+import { clientConfig } from '@/sanity/client'
+
+const builder = imageUrlBuilder(clientConfig)
+
+function urlFor(source: any) {
+  return builder.image(source)
+}
 
 interface PendingItem {
-  id: number
+  _id: string
   name: string
   price: string
   currency: string
   description: string
   category: string
-  images: string[]
+  images: any[]
   createdAt: string
 }
 
@@ -27,7 +35,7 @@ export default function AdminPage() {
   const [pendingCars, setPendingCars] = useState<PendingItem[]>([])
   const [pendingHouses, setPendingHouses] = useState<PendingItem[]>([])
   const [activeTab, setActiveTab] = useState<"cars" | "houses">("cars")
-  const [actionLoading, setActionLoading] = useState<number | null>(null)
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   useEffect(() => {
     const storedAuth = localStorage.getItem("adminAuth")
@@ -46,14 +54,20 @@ export default function AdminPage() {
   const fetchPending = async () => {
     try {
       const [carsRes, housesRes] = await Promise.all([
-        fetch("/api/cars?pending=true"),
-        fetch("/api/houses?pending=true")
+        fetch("/api/ads?pending=true&category=car"),
+        fetch("/api/ads?pending=true&category=house")
       ])
       if (carsRes.ok) setPendingCars(await carsRes.json())
       if (housesRes.ok) setPendingHouses(await housesRes.json())
     } catch (err) {
       console.error("Failed to fetch pending:", err)
     }
+  }
+
+  const getImageUrl = (image: any) => {
+    if (!image) return "/placeholder.svg"
+    if (typeof image === 'string') return image
+    return urlFor(image).url()
   }
 
   const handleLogin = (e: React.FormEvent) => {
@@ -72,11 +86,10 @@ export default function AdminPage() {
     router.push("/")
   }
 
-  const handleApprove = async (id: number, type: "car" | "house") => {
+  const handleApprove = async (id: string, type: "car" | "house") => {
     setActionLoading(id)
     try {
-      const endpoint = type === "car" ? "/api/cars" : "/api/houses"
-      await fetch(`${endpoint}?id=${id}`, {
+      await fetch(`/api/ads?id=${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ approved: true })
@@ -89,12 +102,11 @@ export default function AdminPage() {
     }
   }
 
-  const handleReject = async (id: number, type: "car" | "house") => {
+  const handleReject = async (id: string, type: "car" | "house") => {
     if (!confirm("Are you sure you want to delete this ad?")) return
     setActionLoading(id)
     try {
-      const endpoint = type === "car" ? "/api/cars" : "/api/houses"
-      await fetch(`${endpoint}?id=${id}`, { method: "DELETE" })
+      await fetch(`/api/ads?id=${id}`, { method: "DELETE" })
       fetchPending()
     } catch (err) {
       console.error("Failed to reject:", err)
@@ -231,7 +243,7 @@ export default function AdminPage() {
                   <div className="w-full md:w-64 h-48 relative rounded-2xl overflow-hidden bg-neutral-900 flex-shrink-0">
                     {item.images?.[0] ? (
                       <Image
-                        src={item.images[0]}
+                        src={getImageUrl(item.images[0])}
                         alt={item.name}
                         fill
                         className="object-cover"
@@ -270,11 +282,11 @@ export default function AdminPage() {
                     
                     <div className="flex gap-4 mt-6">
                       <button
-                        onClick={() => handleApprove(item.id, activeTab === "cars" ? "car" : "house")}
-                        disabled={actionLoading === item.id}
+                        onClick={() => handleApprove(item._id, activeTab === "cars" ? "car" : "house")}
+                        disabled={actionLoading === item._id}
                         className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-bold uppercase text-xs tracking-wider rounded-xl hover:bg-green-700 transition-all disabled:opacity-50"
                       >
-                        {actionLoading === item.id ? (
+                        {actionLoading === item._id ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <Check className="w-4 h-4" />
@@ -282,8 +294,8 @@ export default function AdminPage() {
                         Approve
                       </button>
                       <button
-                        onClick={() => handleReject(item.id, activeTab === "cars" ? "car" : "house")}
-                        disabled={actionLoading === item.id}
+                        onClick={() => handleReject(item._id, activeTab === "cars" ? "car" : "house")}
+                        disabled={actionLoading === item._id}
                         className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white font-bold uppercase text-xs tracking-wider rounded-xl hover:bg-red-700 transition-all disabled:opacity-50"
                       >
                         <X className="w-4 h-4" />

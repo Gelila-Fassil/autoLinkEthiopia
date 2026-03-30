@@ -28,9 +28,11 @@ import Image from "next/image"
 
 export default function AdPage() {
     const [activeTab, setActiveTab] = useState<"car" | "house">("car")
-    const [images, setImages] = useState<string[]>([])
+    const [images, setImages] = useState<any[]>([])
     const [uploading, setUploading] = useState(false)
+    const [receipt, setReceipt] = useState<any>("")
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const receiptInputRef = useRef<HTMLInputElement>(null)
     const [formData, setFormData] = useState({
         name: "",
         fullName: "",
@@ -61,7 +63,7 @@ export default function AdPage() {
         if (!files) return
 
         setUploading(true)
-        const uploadedUrls: string[] = []
+        const uploadedImages: any[] = []
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i]
@@ -82,19 +84,55 @@ export default function AdPage() {
                 })
                 if (res.ok) {
                     const data = await res.json()
-                    uploadedUrls.push(data.url)
+                    uploadedImages.push(data.asset)
                 }
             } catch (err) {
                 console.error('Upload failed:', err)
             }
         }
 
-        setImages(prev => [...prev, ...uploadedUrls])
+        setImages(prev => [...prev, ...uploadedImages])
         setUploading(false)
     }
 
     const removeImage = (index: number) => {
         setImages(prev => prev.filter((_, i) => i !== index))
+    }
+
+    const handleUpload = async (type: string) => {
+        if (type === "receipt") {
+            receiptInputRef.current?.click()
+        }
+    }
+
+    const handleReceiptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        setUploading(true)
+        const reader = new FileReader()
+        
+        const base64 = await new Promise<string>((resolve) => {
+            reader.onload = () => {
+                resolve(reader.result as string)
+            }
+            reader.readAsDataURL(file)
+        })
+
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64, type: 'receipt' })
+            })
+            if (res.ok) {
+                const data = await res.json()
+                setReceipt(data.asset)
+            }
+        } catch (err) {
+            console.error('Upload failed:', err)
+        }
+        setUploading(false)
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -105,15 +143,14 @@ export default function AdPage() {
     const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const endpoint = activeTab === "car" ? "/api/cars" : "/api/houses"
-    
     try {
-        const response = await fetch(endpoint, {
+        const response = await fetch('/api/ads', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 ...formData, 
                 images: images,
+                category: activeTab,
             }),
         });
 
@@ -521,6 +558,25 @@ export default function AdPage() {
 
                             <div className="space-y-4">
                                 <label className="block text-sm font-medium text-white/70 mb-2">Payment Receipt (Optional)</label>
+                                <input
+                                    ref={receiptInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleReceiptUpload}
+                                    className="hidden"
+                                />
+                                {receipt && (
+                                    <div className="relative aspect-video rounded-xl overflow-hidden bg-neutral-900">
+                                        <Image src={receipt} alt="Receipt" fill className="object-contain" />
+                                        <button
+                                            type="button"
+                                            onClick={() => setReceipt("")}
+                                            className="absolute top-2 right-2 p-1 bg-red-600 rounded-full text-white hover:bg-red-700"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
                                 <div
                                     className="border-2 border-dashed border-primary/20 rounded-2xl p-8 flex flex-col items-center justify-center gap-3 hover:bg-primary/5 transition-all cursor-pointer group"
                                     onClick={() => handleUpload("receipt")}
@@ -530,9 +586,10 @@ export default function AdPage() {
                                 </div>
                                 <button
                                     type="button"
+                                    onClick={() => handleUpload("receipt")}
                                     className="w-full py-4 bg-primary/10 border-2 border-primary/20 text-primary font-bold rounded-xl uppercase tracking-wider text-xs transition-all hover:bg-primary/20"
                                 >
-                                    Choose Receipt File
+                                    {uploading ? "Uploading..." : "Choose Receipt File"}
                                 </button>
                             </div>
                         </section>
