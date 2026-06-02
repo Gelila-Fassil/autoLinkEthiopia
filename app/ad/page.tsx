@@ -60,26 +60,23 @@ export default function AdPage() {
         area: "250",
     })
 
-    function compressImage(base64: string, maxW = 1920, quality = 0.8): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const img = new Image()
-            img.onload = () => {
-                let w = img.width, h = img.height
-                if (w > maxW || h > maxW) {
-                    const ratio = Math.min(maxW / w, maxW / h)
-                    w = Math.round(w * ratio)
-                    h = Math.round(h * ratio)
-                }
-                const canvas = document.createElement('canvas')
-                canvas.width = w
-                canvas.height = h
-                const ctx = canvas.getContext('2d')!
-                ctx.drawImage(img, 0, 0, w, h)
-                resolve(canvas.toDataURL('image/jpeg', quality))
+    async function tryUpload(base64: string): Promise<string | null> {
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64, type: activeTab })
+            })
+            if (res.ok) {
+                const data = await res.json()
+                return data.asset
             }
-            img.onerror = () => reject(new Error('Failed to decode image'))
-            img.src = base64
-        })
+            const err = await res.json()
+            console.error('Upload API error:', err)
+        } catch (err) {
+            console.error('Upload failed:', err)
+        }
+        return null
     }
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,24 +104,42 @@ export default function AdPage() {
                 continue
             }
 
-            try {
-                const compressed = await compressImage(base64)
-                const res = await fetch('/api/upload', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image: compressed, type: activeTab })
-                })
-                if (res.ok) {
-                    const data = await res.json()
-                    uploadedImages.push(data.asset)
-                } else {
-                    const err = await res.json()
-                    console.error('Upload API error:', err)
-                    hasError = true
+            const img = new Image()
+            const canCompress = await new Promise<boolean>(ok => {
+                img.onload = () => ok(true)
+                img.onerror = () => ok(false)
+                img.src = base64
+            })
+
+            if (canCompress) {
+                let w = img.width, h = img.height
+                const maxW = 1920
+                if (w > maxW || h > maxW) {
+                    const ratio = Math.min(maxW / w, maxW / h)
+                    w = Math.round(w * ratio)
+                    h = Math.round(h * ratio)
                 }
-            } catch (err) {
-                console.error('Upload failed:', err)
-                hasError = true
+                const canvas = document.createElement('canvas')
+                canvas.width = w
+                canvas.height = h
+                const ctx = canvas.getContext('2d')!
+                ctx.fillStyle = '#fff'
+                ctx.fillRect(0, 0, w, h)
+                ctx.drawImage(img, 0, 0, w, h)
+                const compressed = canvas.toDataURL('image/jpeg', 0.8)
+
+                const result = await tryUpload(compressed)
+                if (result) {
+                    uploadedImages.push(result)
+                } else {
+                    const fallback = await tryUpload(base64)
+                    if (fallback) uploadedImages.push(fallback)
+                    else hasError = true
+                }
+            } else {
+                const result = await tryUpload(base64)
+                if (result) uploadedImages.push(result)
+                else hasError = true
             }
         }
 
