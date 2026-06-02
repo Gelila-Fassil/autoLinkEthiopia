@@ -72,8 +72,14 @@ export function Navbar() {
             />
           </div>
 
-          {/* Right: Empty for balance */}
+          {/* Right: Place Your Ad */}
           <div className="flex justify-end">
+            <Link
+              href="/ad"
+              className="px-5 py-2.5 text-primary font-bold uppercase text-[10px] tracking-widest border border-primary/40 rounded-full hover:bg-primary/10 transition-all"
+            >
+              Place Your Ad
+            </Link>
           </div>
         </div>
       </nav>

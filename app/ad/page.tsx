@@ -30,6 +30,7 @@ export default function AdPage() {
     const [activeTab, setActiveTab] = useState<"car" | "house">("car")
     const [images, setImages] = useState<any[]>([])
     const [uploading, setUploading] = useState(false)
+    const [uploadError, setUploadError] = useState("")
     const [receipt, setReceipt] = useState<any>("")
     const fileInputRef = useRef<HTMLInputElement>(null)
     const receiptInputRef = useRef<HTMLInputElement>(null)
@@ -51,6 +52,7 @@ export default function AdPage() {
         advertisementType: "For Sale",
         currency: "ETB",
         tags: "#Ford #F150 #2022",
+        premium: false,
         // House specific
         houseType: "Apartment",
         bedrooms: "3",
@@ -62,19 +64,26 @@ export default function AdPage() {
         const files = e.target.files
         if (!files) return
 
+        setUploadError("")
         setUploading(true)
         const uploadedImages: any[] = []
+        let hasError = false
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i]
             const reader = new FileReader()
-            
-            const base64 = await new Promise<string>((resolve) => {
-                reader.onload = () => {
-                    resolve(reader.result as string)
-                }
-                reader.readAsDataURL(file)
-            })
+
+            let base64: string
+            try {
+                base64 = await new Promise<string>((resolve, reject) => {
+                    reader.onload = () => resolve(reader.result as string)
+                    reader.onerror = () => reject(new Error("Failed to read file"))
+                    reader.readAsDataURL(file)
+                })
+            } catch {
+                hasError = true
+                continue
+            }
 
             try {
                 const res = await fetch('/api/upload', {
@@ -85,13 +94,21 @@ export default function AdPage() {
                 if (res.ok) {
                     const data = await res.json()
                     uploadedImages.push(data.asset)
+                } else {
+                    const err = await res.json()
+                    console.error('Upload API error:', err)
+                    hasError = true
                 }
             } catch (err) {
                 console.error('Upload failed:', err)
+                hasError = true
             }
         }
 
         setImages(prev => [...prev, ...uploadedImages])
+        if (hasError) {
+            setUploadError("Some images failed to upload. Make sure files are under 4MB and try again.")
+        }
         setUploading(false)
     }
 
@@ -175,6 +192,7 @@ export default function AdPage() {
                 advertisementType: "For Sale",
                 currency: "ETB",
                 tags: "#Ford #F150 #2022",
+                premium: false,
                 houseType: "Apartment",
                 bedrooms: "3",
                 bathrooms: "2",
@@ -344,15 +362,15 @@ export default function AdPage() {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-white/70 mb-2">Bedrooms</label>
-                                            <input name="bedrooms" type="number" placeholder="3" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
+                                            <input name="bedrooms" type="number" placeholder="3" value={formData.bedrooms} onChange={handleInputChange} className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-white/70 mb-2">Bathrooms</label>
-                                            <input name="bathrooms" type="number" placeholder="2" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
+                                            <input name="bathrooms" type="number" placeholder="2" value={formData.bathrooms} onChange={handleInputChange} className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-white/70 mb-2">Total Area (sqm)</label>
-                                            <input name="area" type="number" placeholder="250" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
+                                            <input name="area" type="number" placeholder="250" value={formData.area} onChange={handleInputChange} className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
                                         </div>
                                     </>
                                 )}
@@ -517,6 +535,9 @@ export default function AdPage() {
                                 >
                                     {uploading ? "Uploading..." : `Choose ${activeTab === "car" ? "Car" : "House"} Images`}
                                 </button>
+                                {uploadError && (
+                                    <p className="text-xs text-red-500 text-center">{uploadError}</p>
+                                )}
                                 <p className="text-xs text-white/40 text-center">You can upload multiple images.</p>
                                 <p className="text-[10px] text-red-500/80 text-center uppercase tracking-tighter">Total image size cannot exceed 4.0MB. Please compress your images if needed.</p>
                             </div>
@@ -638,6 +659,43 @@ export default function AdPage() {
                                             </button>
                                         ))}
                                     </div>
+                                </div>
+
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-white/70 mb-4">Listing Type</label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, premium: false }))}
+                                            className={cn(
+                                                "py-4 rounded-xl font-bold uppercase tracking-wider text-xs transition-all flex items-center justify-center gap-2",
+                                                !formData.premium
+                                                    ? "bg-primary text-background shadow-lg shadow-primary/20"
+                                                    : "bg-white/5 border border-primary/20 text-white/60 hover:bg-white/10"
+                                            )}
+                                        >
+                                            {!formData.premium && <CheckCircle2 className="w-4 h-4" />}
+                                            Standard
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, premium: true }))}
+                                            className={cn(
+                                                "py-4 rounded-xl font-bold uppercase tracking-wider text-xs transition-all flex items-center justify-center gap-2",
+                                                formData.premium
+                                                    ? "bg-primary text-background shadow-lg shadow-primary/20"
+                                                    : "bg-white/5 border border-primary/20 text-white/60 hover:bg-white/10"
+                                            )}
+                                        >
+                                            {formData.premium && <CheckCircle2 className="w-4 h-4" />}
+                                            Premium
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-white/40 mt-2">
+                                        {formData.premium
+                                            ? "Premium ads appear in the featured carousel section."
+                                            : "Standard ads appear in the regular listing grid."}
+                                    </p>
                                 </div>
 
                                 <div className="col-span-2">

@@ -7,14 +7,6 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import imageUrlBuilder from '@sanity/image-url'
-import { clientConfig } from '@/sanity/client'
-
-const builder = imageUrlBuilder(clientConfig)
-
-function urlFor(source: any) {
-  return builder.image(source)
-}
 
 interface Ad {
   _id: string
@@ -24,7 +16,7 @@ interface Ad {
   currency: string
   bodyType: string
   mileage: string
-  images: any[]
+  images: string[]
   category: string
 }
 
@@ -104,7 +96,7 @@ export function InventoryGallery() {
   useEffect(() => {
     async function fetchCars() {
       try {
-        const res = await fetch('/api/ads?approved=true&category=car')
+        const res = await fetch('/api/ads?approved=true&premium=false&category=car')
         if (res.ok) {
           const data = await res.json()
           if (data.length > 0) {
@@ -127,7 +119,7 @@ export function InventoryGallery() {
   const getImageUrl = (image: any) => {
     if (!image) return "/placeholder.svg"
     if (typeof image === 'string') return image
-    return urlFor(image).url()
+    return image.url || "/placeholder.svg"
   }
   
   return (
@@ -152,7 +144,7 @@ export function InventoryGallery() {
           ) : cars.map((car, index) => {
             const isFeatured = index % 3 === 0;
             return (
-              <CardContainer key={car.id} className="inter-var w-full h-full" containerClassName="py-0">
+              <CardContainer key={car._id} className="inter-var w-full h-full" containerClassName="py-0">
                 <CardBody className={cn(
                   "relative group/card w-full h-full min-h-[480px] p-6 rounded-3xl transition-all duration-500 hover:-translate-y-3 flex flex-col",
                   "bg-gradient-to-br from-neutral-900 via-neutral-950 to-black",

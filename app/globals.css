@@ -132,6 +132,15 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  button:not(:disabled),
+  a[href],
+  label,
+  input[type="radio"],
+  input[type="checkbox"],
+  select {
+    cursor: pointer;
+  }
 }
 
 /* Explicit CSS properties to avoid any Tailwind compilation issues with @apply */

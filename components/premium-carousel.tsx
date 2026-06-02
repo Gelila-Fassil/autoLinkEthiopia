@@ -2,82 +2,116 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, ArrowRight, Gauge, Trophy, Zap } from "lucide-react"
+import { ArrowLeft, ArrowRight, Gauge, Trophy, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface CarProps {
-  id: number
+interface PremiumAd {
+  _id: string
   name: string
   category: string
   price: string
+  currency: string
   image: string
+  images: string[]
   year: string
   owner?: string
+  description?: string
+  mileage?: string
+  transmission?: string
 }
 
-const PREMIUM_CARS = [
+const FALLBACK_CARS: PremiumAd[] = [
   {
-    id: 101,
+    _id: "101",
     name: "Lamborghini Revuelto",
     category: "Hypercar",
-    price: "$3,200",
+    price: "3,200",
+    currency: "USD",
     image: "/luxury-sports-car-lamborghini-revuelto-hero.jpg",
+    images: ["/luxury-sports-car-lamborghini-revuelto-hero.jpg"],
     year: "2025",
-    owner: "Selam T.",
-    stats: { speed: "350 km/h", power: "1001 HP", accel: "2.5s" }
+    owner: "Selam T."
   },
   {
-    id: 102,
+    _id: "102",
     name: "Porsche 911 GT3 RS",
     category: "Track Weapon",
-    price: "$2,100",
+    price: "2,100",
+    currency: "USD",
     image: "/white-porsche-911-gt3.jpg",
+    images: ["/white-porsche-911-gt3.jpg"],
     year: "2025",
-    owner: "Elias K.",
-    stats: { speed: "296 km/h", power: "518 HP", accel: "3.2s" }
+    owner: "Elias K."
   },
   {
-    id: 103,
+    _id: "103",
     name: "Rolls-Royce Ghost",
     category: "Ultra Luxury",
-    price: "$2,800",
+    price: "2,800",
+    currency: "USD",
     image: "/rolls-royce-ghost-black.jpg",
+    images: ["/rolls-royce-ghost-black.jpg"],
     year: "2024",
-    owner: "Abel M.",
-    stats: { speed: "250 km/h", power: "563 HP", accel: "4.6s" }
+    owner: "Abel M."
   },
   {
-    id: 104,
+    _id: "104",
     name: "Mercedes-AMG G63",
     category: "Luxury SUV",
-    price: "$1,500",
+    price: "1,500",
+    currency: "USD",
     image: "/black-mercedes-g-wagon.jpg",
+    images: ["/black-mercedes-g-wagon.jpg"],
     year: "2024",
-    owner: "Dawit G.",
-    stats: { speed: "220 km/h", power: "577 HP", accel: "4.5s" }
+    owner: "Dawit G."
   }
 ]
 
 export function PremiumCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
+  const [premiumCars, setPremiumCars] = useState<PremiumAd[]>([])
 
   useEffect(() => {
+    async function fetchPremium() {
+      try {
+        const res = await fetch('/api/ads?approved=true&premium=true&category=car')
+        if (res.ok) {
+          const data = await res.json()
+          if (data.length > 0) {
+            setPremiumCars(data.map((ad: any) => ({
+              ...ad,
+              image: ad.images?.[0] || "/placeholder.svg"
+            })))
+            return
+          }
+        }
+      } catch {}
+      setPremiumCars(FALLBACK_CARS)
+    }
+    fetchPremium()
+  }, [])
+
+  useEffect(() => {
+    if (premiumCars.length === 0) return
     const timer = setInterval(() => {
       handleNext()
     }, 6000)
     return () => clearInterval(timer)
-  }, [currentIndex])
+  }, [currentIndex, premiumCars.length])
 
   const handleNext = () => {
     setDirection(1)
-    setCurrentIndex((prev) => (prev + 1) % PREMIUM_CARS.length)
+    setCurrentIndex((prev) => (prev + 1) % premiumCars.length)
   }
 
   const handlePrev = () => {
     setDirection(-1)
-    setCurrentIndex((prev) => (prev - 1 + PREMIUM_CARS.length) % PREMIUM_CARS.length)
+    setCurrentIndex((prev) => (prev - 1 + premiumCars.length) % premiumCars.length)
   }
+
+  if (premiumCars.length === 0) return null
+  const currentCar = premiumCars[currentIndex]
 
   const variants = {
     enter: (direction: number) => ({
@@ -98,8 +132,6 @@ export function PremiumCarousel() {
       scale: 0.8
     })
   }
-
-  const currentCar = PREMIUM_CARS[currentIndex]
 
   return (
     <div className="relative w-full max-w-[1400px] mx-auto h-[700px] flex items-center justify-center">
@@ -183,7 +215,7 @@ export function PremiumCarousel() {
                      className="inline-block"
                   >
                     <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow-200 mt-4">
-                      {currentCar.price} <span className="text-sm text-white/50 font-normal">/ day</span>
+                      {currentCar.currency} {currentCar.price} <span className="text-sm text-white/50 font-normal">/ day</span>
                     </p>
                   </motion.div>
                 </div>
@@ -197,18 +229,18 @@ export function PremiumCarousel() {
                 >
                   <div className="text-center space-y-1">
                     <Gauge className="w-5 h-5 text-primary mx-auto mb-2" />
-                    <p className="text-lg font-bold text-white">{currentCar.stats.speed}</p>
-                    <p className="text-[10px] uppercase text-white/50">Top Speed</p>
+                    <p className="text-lg font-bold text-white">{currentCar.mileage || "—"} km</p>
+                    <p className="text-[10px] uppercase text-white/50">Mileage</p>
                   </div>
                   <div className="text-center space-y-1 border-x border-white/10">
-                    <Zap className="w-5 h-5 text-primary mx-auto mb-2" />
-                    <p className="text-lg font-bold text-white">{currentCar.stats.power}</p>
-                    <p className="text-[10px] uppercase text-white/50">Power</p>
+                    <Settings className="w-5 h-5 text-primary mx-auto mb-2" />
+                    <p className="text-lg font-bold text-white">{currentCar.transmission || "—"}</p>
+                    <p className="text-[10px] uppercase text-white/50">Transmission</p>
                   </div>
                   <div className="text-center space-y-1">
                     <Trophy className="w-5 h-5 text-primary mx-auto mb-2" />
-                    <p className="text-lg font-bold text-white">{currentCar.stats.accel}</p>
-                    <p className="text-[10px] uppercase text-white/50">0-100 km/h</p>
+                    <p className="text-lg font-bold text-white">{currentCar.year}</p>
+                    <p className="text-[10px] uppercase text-white/50">Year</p>
                   </div>
                 </motion.div>
 
@@ -229,7 +261,7 @@ export function PremiumCarousel() {
       
       {/* Pagination Indicators */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-30">
-        {PREMIUM_CARS.map((_, idx) => (
+        {premiumCars.map((_, idx) => (
           <button
             key={idx}
             onClick={() => {

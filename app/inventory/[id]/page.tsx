@@ -1,7 +1,7 @@
 "use client"
 
 import { Navbar } from "@/components/navbar"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Check, Phone, User, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
@@ -64,7 +64,7 @@ export default function CarDetailPage() {
     useEffect(() => {
         async function fetchCar() {
             try {
-                const res = await fetch(`/api/cars?id=${id}`)
+                const res = await fetch(`/api/ads?id=${id}`)
                 if (res.ok) {
                     const data = await res.json()
                     setCar(data)
@@ -109,6 +109,16 @@ export default function CarDetailPage() {
         <main className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
             <Navbar />
 
+            <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+
             <div className="pt-40 pb-20 max-w-7xl mx-auto px-8 md:px-16">
                 <div className="mb-12">
                     <Link href="/inventory" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-[10px] uppercase tracking-widest font-bold group">
@@ -129,66 +139,99 @@ export default function CarDetailPage() {
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid lg:grid-cols-2 gap-20 items-start">
+                    <div className="grid lg:grid-cols-[1.6fr_1fr] gap-12 lg:gap-20 items-start">
                         <motion.div
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}
-                            className="relative aspect-square lg:h-[650px] w-full bg-neutral-900/30 rounded-[40px] overflow-hidden border border-white/5 group"
+                            className="space-y-4"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-50" />
-                            <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background to-transparent z-10" />
+                            <div className="relative aspect-square lg:h-[550px] w-full bg-neutral-900/30 rounded-[40px] overflow-hidden border border-white/5 group">
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-50" />
+                                <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background to-transparent z-10" />
 
-                            {car.images && car.images.length > 0 ? (
-                                <>
-                                    <Image
-                                        src={car.images[currentImageIndex]}
-                                        alt={car.name}
-                                        fill
-                                        className="object-cover"
-                                    />
-                                    {car.images.length > 1 && (
-                                        <>
-                                            <button
-                                                onClick={prevImage}
-                                                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 backdrop-blur-md rounded-full text-white hover:bg-black/70 transition-all z-20"
+                                {car.images && car.images.length > 0 ? (
+                                    <>
+                                        <AnimatePresence mode="wait">
+                                            <motion.div
+                                                key={currentImageIndex}
+                                                initial={{ opacity: 0, x: 100 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -100 }}
+                                                transition={{ duration: 0.3 }}
+                                                className="absolute inset-0"
                                             >
-                                                <ChevronLeft className="w-6 h-6" />
-                                            </button>
-                                            <button
-                                                onClick={nextImage}
-                                                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 backdrop-blur-md rounded-full text-white hover:bg-black/70 transition-all z-20"
-                                            >
-                                                <ChevronRight className="w-6 h-6" />
-                                            </button>
-                                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                                                {car.images.map((_, idx) => (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => setCurrentImageIndex(idx)}
-                                                        className={`w-2 h-2 rounded-full transition-all ${
-                                                            idx === currentImageIndex ? "bg-primary w-6" : "bg-white/50"
-                                                        }`}
-                                                    />
-                                                ))}
-                                            </div>
-                                        </>
-                                    )}
-                                </>
-                            ) : (
-                                <RotatingCarShowcase image="/placeholder.svg" />
-                            )}
+                                                <Image
+                                                    src={car.images[currentImageIndex]}
+                                                    alt={`${car.name} - Image ${currentImageIndex + 1}`}
+                                                    fill
+                                                    className="object-cover"
+                                                    priority
+                                                />
+                                            </motion.div>
+                                        </AnimatePresence>
 
-                            <div className="absolute top-10 left-10 z-20">
-                                <div className="px-4 py-1.5 bg-primary/10 backdrop-blur-md border border-primary/20 rounded-full">
-                                    <span className="text-[10px] uppercase tracking-widest font-bold text-primary">{car.advertisementType}</span>
+                                        {car.images.length > 1 && (
+                                            <>
+                                                <button
+                                                    onClick={prevImage}
+                                                    className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 backdrop-blur-md rounded-full text-white hover:bg-black/70 transition-all z-20 opacity-0 group-hover:opacity-100"
+                                                >
+                                                    <ChevronLeft className="w-6 h-6" />
+                                                </button>
+                                                <button
+                                                    onClick={nextImage}
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 backdrop-blur-md rounded-full text-white hover:bg-black/70 transition-all z-20 opacity-0 group-hover:opacity-100"
+                                                >
+                                                    <ChevronRight className="w-6 h-6" />
+                                                </button>
+                                                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 px-4 py-2 bg-black/60 backdrop-blur-md rounded-full">
+                                                    <span className="text-white/80 text-sm font-medium tabular-nums">
+                                                        {currentImageIndex + 1} / {car.images.length}
+                                                    </span>
+                                                </div>
+                                            </>
+                                        )}
+                                    </>
+                                ) : (
+                                    <RotatingCarShowcase image="/placeholder.svg" />
+                                )}
+
+                                <div className="absolute top-6 left-6 z-20">
+                                    <div className="px-4 py-1.5 bg-primary/10 backdrop-blur-md border border-primary/20 rounded-full">
+                                        <span className="text-[10px] uppercase tracking-widest font-bold text-primary">{car.advertisementType}</span>
+                                    </div>
+                                </div>
+
+                                <div className="absolute bottom-6 left-6 z-20">
+                                    <span className="text-[10px] uppercase tracking-[0.4em] text-primary/60 font-bold block">Series Model</span>
+                                    <div className="text-3xl font-serif font-bold tracking-tighter text-white/90">{car.year}</div>
                                 </div>
                             </div>
 
-                            <div className="absolute bottom-12 left-12 z-20 space-y-2">
-                                <span className="text-[10px] uppercase tracking-[0.4em] text-primary/60 font-bold block">Series Model</span>
-                                <div className="text-5xl font-serif font-bold tracking-tighter">{car.year}</div>
-                            </div>
+                            {car.images && car.images.length > 1 && (
+                                <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                                    {car.images.map((img, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setCurrentImageIndex(idx)}
+                                            className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                                                idx === currentImageIndex
+                                                    ? "border-primary ring-1 ring-primary/50 scale-105"
+                                                    : "border-white/10 opacity-60 hover:opacity-100 hover:border-white/30"
+                                            }`}
+                                        >
+                                            <Image
+                                                src={img}
+                                                alt={`${car.name} thumbnail ${idx + 1}`}
+                                                fill
+                                                className="object-cover"
+                                                sizes="80px"
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </motion.div>
 
                         <motion.div
@@ -264,11 +307,11 @@ export default function CarDetailPage() {
                             >
                                 <a 
                                     href={`tel:${car.phoneNumber}`}
-                                    className="flex-1 px-12 py-6 bg-primary text-background font-bold uppercase text-[10px] tracking-[0.4em] hover:bg-accent transition-all shadow-xl shadow-primary/10 text-center"
+                                    className="flex-1 px-12 py-6 bg-primary text-background font-bold uppercase text-[10px] tracking-[0.4em] hover:bg-accent transition-all shadow-xl shadow-primary/10 text-center rounded-full"
                                 >
                                     Call Seller
                                 </a>
-                                <button className="flex-1 px-12 py-6 border-2 border-primary/30 text-primary font-bold uppercase text-[10px] tracking-[0.4em] hover:border-primary transition-all">
+                                <button className="flex-1 px-12 py-6 border-2 border-primary/30 text-primary font-bold uppercase text-[10px] tracking-[0.4em] hover:border-primary transition-all rounded-full">
                                     Request Viewing
                                 </button>
                             </motion.div>
