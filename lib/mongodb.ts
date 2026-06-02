@@ -1,7 +1,14 @@
 import { MongoClient, Db } from 'mongodb'
 
-let cachedClient: MongoClient | null = null
-let cachedDb: Db | null = null
+declare global {
+  // eslint-disable-next-line no-var
+  var _mongoClient: MongoClient | null
+  // eslint-disable-next-line no-var
+  var _mongoDb: Db | null
+}
+
+let cachedClient: MongoClient | null = global._mongoClient || null
+let cachedDb: Db | null = global._mongoDb || null
 
 export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db }> {
   if (cachedClient && cachedDb) {
@@ -14,8 +21,9 @@ export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db
   }
 
   const client = new MongoClient(uri, {
-    tlsAllowInvalidCertificates: true,
     serverSelectionTimeoutMS: 5000,
+    retryWrites: true,
+    w: 'majority',
   })
 
   await client.connect()
@@ -23,6 +31,11 @@ export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db
 
   cachedClient = client
   cachedDb = db
+
+  if (process.env.NODE_ENV !== 'production') {
+    global._mongoClient = client
+    global._mongoDb = db
+  }
 
   return { client, db }
 }

@@ -60,6 +60,28 @@ export default function AdPage() {
         area: "250",
     })
 
+    function compressImage(base64: string, maxW = 1920, quality = 0.8): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const img = new Image()
+            img.onload = () => {
+                let w = img.width, h = img.height
+                if (w > maxW || h > maxW) {
+                    const ratio = Math.min(maxW / w, maxW / h)
+                    w = Math.round(w * ratio)
+                    h = Math.round(h * ratio)
+                }
+                const canvas = document.createElement('canvas')
+                canvas.width = w
+                canvas.height = h
+                const ctx = canvas.getContext('2d')!
+                ctx.drawImage(img, 0, 0, w, h)
+                resolve(canvas.toDataURL('image/jpeg', quality))
+            }
+            img.onerror = () => reject(new Error('Failed to decode image'))
+            img.src = base64
+        })
+    }
+
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         if (!files) return
@@ -86,10 +108,11 @@ export default function AdPage() {
             }
 
             try {
+                const compressed = await compressImage(base64)
                 const res = await fetch('/api/upload', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image: base64, type: activeTab })
+                    body: JSON.stringify({ image: compressed, type: activeTab })
                 })
                 if (res.ok) {
                     const data = await res.json()
@@ -107,7 +130,7 @@ export default function AdPage() {
 
         setImages(prev => [...prev, ...uploadedImages])
         if (hasError) {
-            setUploadError("Some images failed to upload. Make sure files are under 4MB and try again.")
+            setUploadError("Some images failed to upload. Try a different file format or smaller image.")
         }
         setUploading(false)
     }
@@ -539,7 +562,7 @@ export default function AdPage() {
                                     <p className="text-xs text-red-500 text-center">{uploadError}</p>
                                 )}
                                 <p className="text-xs text-white/40 text-center">You can upload multiple images.</p>
-                                <p className="text-[10px] text-red-500/80 text-center uppercase tracking-tighter">Total image size cannot exceed 4.0MB. Please compress your images if needed.</p>
+                                <p className="text-[10px] text-white/40 text-center uppercase tracking-tighter">Images are automatically compressed before upload.</p>
                             </div>
                         </section>
 
