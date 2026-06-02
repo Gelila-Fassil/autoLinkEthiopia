@@ -60,25 +60,6 @@ export default function AdPage() {
         area: "250",
     })
 
-    async function tryUpload(base64: string): Promise<string | null> {
-        try {
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: base64, type: activeTab })
-            })
-            if (res.ok) {
-                const data = await res.json()
-                return data.asset
-            }
-            const err = await res.json()
-            console.error('Upload API error:', err)
-        } catch (err) {
-            console.error('Upload failed:', err)
-        }
-        return null
-    }
-
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         if (!files) return
@@ -90,11 +71,11 @@ export default function AdPage() {
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i]
-            const reader = new FileReader()
 
             let base64: string
             try {
                 base64 = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader()
                     reader.onload = () => resolve(reader.result as string)
                     reader.onerror = () => reject(new Error("Failed to read file"))
                     reader.readAsDataURL(file)
@@ -104,48 +85,39 @@ export default function AdPage() {
                 continue
             }
 
-            const img = new Image()
-            const canCompress = await new Promise<boolean>(ok => {
-                img.onload = () => ok(true)
-                img.onerror = () => ok(false)
-                img.src = base64
-            })
+            try {
+                const controller = new AbortController()
+                const timeout = setTimeout(() => controller.abort(), 60000)
 
-            if (canCompress) {
-                let w = img.width, h = img.height
-                const maxW = 1920
-                if (w > maxW || h > maxW) {
-                    const ratio = Math.min(maxW / w, maxW / h)
-                    w = Math.round(w * ratio)
-                    h = Math.round(h * ratio)
-                }
-                const canvas = document.createElement('canvas')
-                canvas.width = w
-                canvas.height = h
-                const ctx = canvas.getContext('2d')!
-                ctx.fillStyle = '#fff'
-                ctx.fillRect(0, 0, w, h)
-                ctx.drawImage(img, 0, 0, w, h)
-                const compressed = canvas.toDataURL('image/jpeg', 0.8)
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64, type: activeTab }),
+                    signal: controller.signal,
+                })
+                clearTimeout(timeout)
 
-                const result = await tryUpload(compressed)
-                if (result) {
-                    uploadedImages.push(result)
+                if (res.ok) {
+                    const data = await res.json()
+                    uploadedImages.push(data.asset)
                 } else {
-                    const fallback = await tryUpload(base64)
-                    if (fallback) uploadedImages.push(fallback)
-                    else hasError = true
+                    const err = await res.json()
+                    console.error('Upload API error:', err)
+                    hasError = true
                 }
-            } else {
-                const result = await tryUpload(base64)
-                if (result) uploadedImages.push(result)
-                else hasError = true
+            } catch (err: any) {
+                if (err?.name === 'AbortError') {
+                    console.error('Upload timed out')
+                } else {
+                    console.error('Upload failed:', err)
+                }
+                hasError = true
             }
         }
 
         setImages(prev => [...prev, ...uploadedImages])
         if (hasError) {
-            setUploadError("Some images failed to upload. Try a different file format or smaller image.")
+            setUploadError("Upload timed out. Try a smaller image or check your connection.")
         }
         setUploading(false)
     }
