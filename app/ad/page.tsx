@@ -66,48 +66,52 @@ export default function AdPage() {
 
         setUploadError("")
         setUploading(true)
-        const uploadedImages: any[] = []
+
+        let auth: { cloudName: string; apiKey: string; signature: string; timestamp: number; folder: string }
+        try {
+            const authRes = await fetch('/api/upload', { method: 'POST' })
+            if (!authRes.ok) throw new Error('Failed to get upload auth')
+            auth = await authRes.json()
+        } catch {
+            setUploadError("Failed to initialize upload. Check your connection.")
+            setUploading(false)
+            return
+        }
+
+        const uploadedImages: string[] = []
         let hasError = false
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i]
-
-            let base64: string
-            try {
-                base64 = await new Promise<string>((resolve, reject) => {
-                    const reader = new FileReader()
-                    reader.onload = () => resolve(reader.result as string)
-                    reader.onerror = () => reject(new Error("Failed to read file"))
-                    reader.readAsDataURL(file)
-                })
-            } catch {
-                hasError = true
-                continue
-            }
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('folder', auth.folder)
+            formData.append('timestamp', String(auth.timestamp))
+            formData.append('api_key', auth.apiKey)
+            formData.append('signature', auth.signature)
 
             try {
                 const controller = new AbortController()
-                const timeout = setTimeout(() => controller.abort(), 60000)
+                const timeout = setTimeout(() => controller.abort(), 120000)
 
-                const res = await fetch('/api/upload', {
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${auth.cloudName}/image/upload`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image: base64, type: activeTab }),
+                    body: formData,
                     signal: controller.signal,
                 })
                 clearTimeout(timeout)
 
                 if (res.ok) {
                     const data = await res.json()
-                    uploadedImages.push(data.asset)
+                    uploadedImages.push(data.secure_url)
                 } else {
-                    const err = await res.json()
-                    console.error('Upload API error:', err)
+                    const errText = await res.text()
+                    console.error('Cloudinary error:', errText)
                     hasError = true
                 }
             } catch (err: any) {
                 if (err?.name === 'AbortError') {
-                    console.error('Upload timed out')
+                    console.error('Upload timed out (2min)')
                 } else {
                     console.error('Upload failed:', err)
                 }
@@ -117,7 +121,7 @@ export default function AdPage() {
 
         setImages(prev => [...prev, ...uploadedImages])
         if (hasError) {
-            setUploadError("Upload timed out. Try a smaller image or check your connection.")
+            setUploadError("Some images failed to upload. Try again.")
         }
         setUploading(false)
     }

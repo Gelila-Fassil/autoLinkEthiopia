@@ -1,23 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { uploadImage } from '@/lib/cloudinary'
+import { createHash } from 'crypto'
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { image } = body
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME
+const apiKey = process.env.CLOUDINARY_API_KEY
+const apiSecret = process.env.CLOUDINARY_API_SECRET
 
-    if (!image) {
-      return NextResponse.json({ error: 'No image provided' }, { status: 400 })
-    }
-
-    const url = await uploadImage(image)
-
-    return NextResponse.json({
-      url,
-      asset: url,
-    })
-  } catch (error) {
-    console.error('Error uploading image:', error)
-    return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 })
+export async function POST() {
+  if (!cloudName || !apiKey || !apiSecret) {
+    return NextResponse.json({ error: 'Missing Cloudinary config' }, { status: 500 })
   }
+
+  const timestamp = Math.round(Date.now() / 1000)
+  const folder = 'autolink'
+
+  const params = `folder=${folder}&timestamp=${timestamp}`
+  const signature = createHash('sha1').update(params + apiSecret).digest('hex')
+
+  return NextResponse.json({
+    cloudName,
+    apiKey,
+    signature,
+    timestamp,
+    folder,
+  })
 }
