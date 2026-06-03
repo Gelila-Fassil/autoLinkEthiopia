@@ -140,28 +140,37 @@ export default function AdPage() {
         const file = e.target.files?.[0]
         if (!file) return
 
+        setUploadError("")
         setUploading(true)
-        const reader = new FileReader()
-        
-        const base64 = await new Promise<string>((resolve) => {
-            reader.onload = () => {
-                resolve(reader.result as string)
-            }
-            reader.readAsDataURL(file)
-        })
 
         try {
-            const res = await fetch('/api/upload', {
+            const authRes = await fetch('/api/upload', { method: 'POST' })
+            if (!authRes.ok) throw new Error('Failed to get upload auth')
+            const auth = await authRes.json()
+
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('folder', auth.folder)
+            formData.append('timestamp', String(auth.timestamp))
+            formData.append('api_key', auth.apiKey)
+            formData.append('signature', auth.signature)
+
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${auth.cloudName}/image/upload`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: base64, type: 'receipt' })
+                body: formData,
             })
+
             if (res.ok) {
                 const data = await res.json()
-                setReceipt(data.asset)
+                setReceipt(data.secure_url)
+            } else {
+                const errText = await res.text()
+                console.error('Receipt upload error:', errText)
+                setUploadError("Receipt upload failed. Try again.")
             }
         } catch (err) {
-            console.error('Upload failed:', err)
+            console.error('Receipt upload failed:', err)
+            setUploadError("Receipt upload failed. Try again.")
         }
         setUploading(false)
     }
@@ -173,7 +182,12 @@ export default function AdPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    if (!receipt) {
+        setUploadError("Please upload a payment receipt before submitting.")
+        return
+    }
+
     try {
         const response = await fetch('/api/ads', {
             method: "POST",
@@ -181,6 +195,7 @@ export default function AdPage() {
             body: JSON.stringify({ 
                 ...formData, 
                 images: images,
+                receipt,
                 category: activeTab,
             }),
         });
@@ -213,6 +228,7 @@ export default function AdPage() {
                 area: "250",
             })
             setImages([])
+            setReceipt("")
         } else {
             const errorData = await response.json();
             alert("Error: " + (errorData.error || "Failed to submit ad"));
@@ -592,7 +608,7 @@ export default function AdPage() {
                             </div>
 
                             <div className="space-y-4">
-                                <label className="block text-sm font-medium text-white/70 mb-2">Payment Receipt (Optional)</label>
+                                <label className="block text-sm font-medium text-white/70 mb-2">Payment Receipt <span className="text-red-500">*</span></label>
                                 <input
                                     ref={receiptInputRef}
                                     type="file"

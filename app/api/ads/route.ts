@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
       premium: body.premium === true,
       status: 'PENDING',
       images: body.images || [],
+      receipt: body.receipt || '',
       year: body.year || '',
       mileage: body.mileage || '',
       speed: body.speed || '',
