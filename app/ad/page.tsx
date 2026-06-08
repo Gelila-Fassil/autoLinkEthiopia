@@ -594,7 +594,7 @@ export default function AdPage() {
                                     <div className="flex flex-col gap-1">
                                         <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">Phone Number</span>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-primary font-bold text-xl tracking-wider">+251 904945786</span>
+                                            <span className="text-primary font-bold text-xl tracking-wider">+251 912151287</span>
                                             <button type="button" className="p-2 hover:bg-white/5 rounded-lg transition-colors">
                                                 <FileText className="w-4 h-4 text-primary/60" />
                                             </button>
@@ -602,7 +602,7 @@ export default function AdPage() {
                                     </div>
                                     <div className="flex flex-col gap-1">
                                         <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">Account Holder Name</span>
-                                        <span className="text-white font-bold">Getaneh</span>
+                                        <span className="text-white font-bold">Seyfu</span>
                                     </div>
                                 </div>
                             </div>
