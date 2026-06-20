@@ -45,13 +45,13 @@ export default function AdPage() {
         fuelType: "Petrol",
         bodyType: "Truck",
         description: "",
-        price: "1000",
-        condition: "Excellent",
-        engine: "3.8L V6",
-        maintenance: "Frequent",
+                price: "",
+        condition: "",
+        engine: "",
+        maintenance: "",
         advertisementType: "For Sale",
         currency: "ETB",
-        tags: "#Ford #F150 #2022",
+                tags: "",
         premium: false,
         // House specific
         houseType: "Apartment",
@@ -214,13 +214,13 @@ export default function AdPage() {
                 fuelType: "Petrol",
                 bodyType: "Truck",
                 description: "",
-                price: "1000",
-                condition: "Excellent",
-                engine: "3.8L V6",
-                maintenance: "Frequent",
+        price: "",
+                condition: "",
+                engine: "",
+                maintenance: "",
                 advertisementType: "For Sale",
                 currency: "ETB",
-                tags: "#Ford #F150 #2022",
+        tags: "",
                 premium: false,
                 houseType: "Apartment",
                 bedrooms: "3",
@@ -651,22 +651,22 @@ export default function AdPage() {
                                     <>
                                         <div>
                                             <label className="block text-sm font-medium text-white/70 mb-2">Condition</label>
-                                            <input name="condition" value={formData.condition} className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white" />
+                                            <input name="condition" value={formData.condition} onChange={handleInputChange} placeholder="Excellent" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-white/70 mb-2">Engine</label>
-                                            <input name="engine" value={formData.engine} className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white" />
+                                            <input name="engine" value={formData.engine} onChange={handleInputChange} placeholder="3.8L V6" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
                                         </div>
                                         <div className="col-span-2">
                                             <label className="block text-sm font-medium text-white/70 mb-2">Maintenance</label>
-                                            <input name="maintenance" value={formData.maintenance} className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white" />
+                                            <input name="maintenance" value={formData.maintenance} onChange={handleInputChange} placeholder="Frequent" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
                                         </div>
                                     </>
                                 )}
 
                                 <div className="col-span-2">
                                     <label className="block text-sm font-medium text-white/70 mb-2">Price *</label>
-                                    <input name="price" value={formData.price} className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white" />
+                                    <input name="price" value={formData.price} onChange={handleInputChange} placeholder="1000" className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20" />
                                 </div>
 
                                 <div className="col-span-2">
@@ -763,6 +763,7 @@ export default function AdPage() {
                                         name="tags"
                                         value={formData.tags}
                                         onChange={handleInputChange}
+                                        placeholder="#Ford #F150 #2022"
                                         className="w-full px-4 py-3 bg-white/5 border border-primary/20 rounded-xl focus:outline-none focus:border-primary/60 transition-all text-white placeholder:text-white/20"
                                     />
                                 </div>
