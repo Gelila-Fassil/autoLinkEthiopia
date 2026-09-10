@@ -5,6 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   google-site-verification=Dqi3tQQ5vT4N0PEyEb_Zz4Oo_xMytjIvvEiSxxzIjaw
+<meta name="google-adsense-account" content="ca-pub-3745029649009326">
   title: "Autolink Ethiopia | Luxury Cars & High-End Rentals",
   description:
     "The premier destination for luxury automotive sales and exclusive property rentals in Ethiopia.",
