@@ -87,8 +87,8 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-primary flex-shrink-0" />
-                <a href="tel:+251911234567" className="text-sm text-white/60 hover:text-primary transition-colors">
-                  +251 911 234 567
+                <a href="tel:+251912151287" className="text-sm text-white/60 hover:text-primary transition-colors">
+                  +251 912 151 287
                 </a>
               </li>
               <li className="flex items-center gap-3">
@@ -163,7 +163,7 @@ export function Footer() {
           className="pt-8 border-t border-primary/10 flex flex-col md:flex-row items-center justify-between gap-4"
         >
           <p className="text-xs uppercase tracking-widest text-white/40">
-            © 2025 Autolink Ethiopia. All Rights Reserved.
+            © 2026 Autolink Ethiopia. All Rights Reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link href="#" className="text-xs uppercase tracking-wider text-white/40 hover:text-primary transition-colors">
