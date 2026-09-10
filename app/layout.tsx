@@ -45,6 +45,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        google-site-verification=Dqi3tQQ5vT4N0PEyEb_Zz4Oo_xMytjIvvEiSxxzIjaw
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:wght@400..900&display=swap"
           rel="stylesheet"
