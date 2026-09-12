@@ -1,13 +1,18 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { GoogleTagManager } from "@next/third-parties/google"; // Installed component for GA/GTM control
+import { GoogleTagManager } from "@next/third-parties/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Autolink Ethiopia | Luxury Cars & High-End Rentals",
   description:
-    "The premier destination for luxury automotive sales and exclusive property rentals in Ethiopia.",
+    "The premier destination for luxury automotive sales and exclusive vehicle services in Ethiopia.",
   generator: "v0.app",
+
+  verification: {
+    google: "Dqi3tQQ5vT4N0PEyEb_Zz4Oo_xMytjIvvEiSxxzIjaw",
+  },
+
   icons: {
     icon: [
       {
@@ -24,11 +29,6 @@ export const metadata: Metadata = {
       },
     ],
     apple: "/apple-icon.png",
-  },
-  // Added Google SEO verification token here
-  verification: {
-    google: "Dqi3tQQ5vT4N0PEyEb_Zz4Oo_xMytjIvvEiSxxzIjaw",
-    google-site-verification=Dqi3tQQ5vT4N0PEyEb_Zz4Oo_xMytjIvvEiSxxzIjaw 
   },
 };
 
@@ -51,11 +51,11 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
+
       <body className="font-sans antialiased overflow-x-hidden">
         {children}
       </body>
-      {google-site-verification=Dqi3tQQ5vT4N0PEyEb_Zz4Oo_xMytjIvvEiSxxzIjaw
-      */}
+
       <GoogleTagManager gtmId="GTM-XXXXXXX" />
     </html>
   );
