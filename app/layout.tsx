@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   // Added Google SEO verification token here
   verification: {
     google: "Dqi3tQQ5vT4N0PEyEb_Zz4Oo_xMytjIvvEiSxxzIjaw",
+    google-site-verification=Dqi3tQQ5vT4N0PEyEb_Zz4Oo_xMytjIvvEiSxxzIjaw 
   },
 };
 
