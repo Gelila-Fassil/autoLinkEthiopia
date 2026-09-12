@@ -126,15 +126,15 @@ export default function ContactPage() {
                             {
                                 icon: Phone,
                                 title: "Phone",
-                                content: "+251 911 234 567",
-                                link: "tel:+251911234567",
+                                content: "+251 912 151 287",
+                                link: "tel:+251912151287",
                                 desc: "Call us directly"
                             },
                             {
                                 icon: Mail,
                                 title: "Email",
-                                content: "info@autolinkethiopia.com",
-                                link: "mailto:info@autolinkethiopia.com",
+                                content: "seyfutech@gmail.com",
+                                link: "mailto:seyfutech@gmail.com",
                                 desc: "Send us a message"
                             },
                             {
