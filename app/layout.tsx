@@ -54,8 +54,7 @@ export default function RootLayout({
       <body className="font-sans antialiased overflow-x-hidden">
         {children}
       </body>
-      {/* As soon as your client sets up their Google Tag Manager account, 
-        replace 'GTM-XXXXXXX' below with their actual GTM Container ID.
+      {google-site-verification=Dqi3tQQ5vT4N0PEyEb_Zz4Oo_xMytjIvvEiSxxzIjaw
       */}
       <GoogleTagManager gtmId="GTM-XXXXXXX" />
     </html>
